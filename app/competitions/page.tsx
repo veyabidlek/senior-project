@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import { CompetitionCardSkeleton } from "@/components/Skeleton";
-import { BookOpen, Plus, Calendar, Zap, Users, Check } from "lucide-react";
+import { BookOpen, Plus, Calendar, Zap, Users, Check, LogIn } from "lucide-react";
 
 interface Competition {
   id: string;
@@ -26,20 +25,21 @@ interface Competition {
 }
 
 export default function CompetitionsPage() {
-  const { user } = useAuth();
-  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
+    if (authLoading) return;
+    if (user) {
+      loadCompetitions();
+    } else {
+      // Try loading competitions even without auth (will fail gracefully)
+      loadCompetitionsPublic();
     }
-    loadCompetitions();
-  }, [user, router]);
+  }, [user, authLoading]);
 
   const loadCompetitions = async () => {
     try {
@@ -48,6 +48,19 @@ export default function CompetitionsPage() {
       setCompetitions(Array.isArray(data) ? data : []);
     } catch {
       toast("Failed to load competitions", "error");
+      setCompetitions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCompetitionsPublic = async () => {
+    try {
+      setLoading(true);
+      const data = await api.listCompetitions();
+      setCompetitions(Array.isArray(data) ? data : []);
+    } catch {
+      // Not logged in — API may reject, that's fine
       setCompetitions([]);
     } finally {
       setLoading(false);
@@ -71,8 +84,6 @@ export default function CompetitionsPage() {
       setJoiningId(null);
     }
   };
-
-  if (!user) return null;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -109,17 +120,36 @@ export default function CompetitionsPage() {
               Competitions
             </h1>
             <p className="text-sm text-text-muted mt-1">
-              Join a challenge or create your own
+              {user ? "Join a challenge or create your own" : "Browse active reading competitions"}
             </p>
           </div>
-          <Link
-            href="/create-competition"
-            className="px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium flex items-center gap-2 text-sm active:scale-[0.98]"
-          >
-            <Plus size={16} />
-            <span>New Competition</span>
-          </Link>
+          {user && (
+            <Link
+              href="/create-competition"
+              className="px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium flex items-center gap-2 text-sm active:scale-[0.98]"
+            >
+              <Plus size={16} />
+              <span>New Competition</span>
+            </Link>
+          )}
         </div>
+
+        {/* Login prompt for unauthenticated users */}
+        {!user && !authLoading && (
+          <div className="bg-secondary/10 rounded-2xl border border-secondary/20 p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-text">Want to join a competition?</p>
+              <p className="text-xs text-text-muted mt-0.5">Sign in or create an account to participate</p>
+            </div>
+            <Link
+              href="/login"
+              className="px-4 py-2 bg-secondary text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
+            >
+              <LogIn size={14} />
+              Sign in
+            </Link>
+          </div>
+        )}
 
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -136,24 +166,27 @@ export default function CompetitionsPage() {
               No competitions yet
             </h2>
             <p className="text-sm text-text-muted mb-6">
-              Be the first to create a reading competition!
+              {user
+                ? "Be the first to create a reading competition!"
+                : "Check back later for new competitions"}
             </p>
-            <Link
-              href="/create-competition"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium text-sm active:scale-[0.98]"
-            >
-              <Plus size={16} />
-              <span>Create One Now</span>
-            </Link>
+            {user && (
+              <Link
+                href="/create-competition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium text-sm active:scale-[0.98]"
+              >
+                <Plus size={16} />
+                <span>Create One Now</span>
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {competitions.map((competition, i) => (
+            {competitions.map((competition) => (
               <Link
                 key={competition.id}
-                href={`/competitions/${competition.id}`}
+                href={user ? `/competitions/${competition.id}` : "/login"}
                 className="group bg-surface-raised rounded-2xl border border-border hover:border-secondary/40 hover:shadow-md transition-all active:scale-[0.99]"
-                style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="p-5">
                   <div className="flex justify-between items-start gap-3 mb-3">
@@ -191,7 +224,11 @@ export default function CompetitionsPage() {
                 </div>
 
                 <div className="px-5 py-3 border-t border-border">
-                  {isUserParticipant(competition) ? (
+                  {!user ? (
+                    <span className="text-xs font-medium text-secondary">
+                      Sign in to join
+                    </span>
+                  ) : isUserParticipant(competition) ? (
                     <div className="text-xs font-medium text-success flex items-center gap-1.5">
                       <Check size={12} />
                       Joined

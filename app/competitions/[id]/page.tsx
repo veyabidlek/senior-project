@@ -58,7 +58,7 @@ export default function CompetitionDetailPage() {
         api.getMyRank(competitionId).catch(() => null),
         api.getCompetition(competitionId).catch(() => null),
       ]);
-      setLeaderboard(leaderboardData);
+      setLeaderboard(Array.isArray(leaderboardData) ? leaderboardData : []);
       setMyRank(rankData);
       setCompetition(compData);
     } catch {
@@ -233,7 +233,7 @@ export default function CompetitionDetailPage() {
                       {getRankDisplay(entry.rank)}
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-primary/40 flex items-center justify-center text-xs font-bold text-text">
-                      {entry.display_name[0].toUpperCase()}
+                      {(entry.display_name || "?")[0].toUpperCase()}
                     </div>
                     <div>
                       <span className="text-sm font-medium text-text">

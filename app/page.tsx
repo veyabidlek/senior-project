@@ -52,10 +52,10 @@ export default function Home() {
                   <ArrowRight size={16} />
                 </Link>
                 <Link
-                  href="/login"
+                  href="/competitions"
                   className="px-6 py-3 bg-surface-sunken text-text border border-border rounded-xl hover:bg-border transition-colors font-medium text-sm"
                 >
-                  Sign in
+                  Browse Competitions
                 </Link>
               </div>
             ) : (
