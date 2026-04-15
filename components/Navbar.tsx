@@ -2,7 +2,8 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard } from "lucide-react";
+import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 import Image from "next/image";
 import { useState } from "react";
 import ReadingLogModal from "./ReadingLogModal";
@@ -11,6 +12,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [showReadingModal, setShowReadingModal] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
@@ -84,6 +86,13 @@ export default function Navbar() {
                     </div>
                   </div>
                   <button
+                    onClick={toggleTheme}
+                    className="p-2 text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors"
+                    aria-label="Toggle theme"
+                  >
+                    {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+                  </button>
+                  <button
                     onClick={logout}
                     className="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
                     aria-label="Logout"
@@ -93,6 +102,13 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
+                  <button
+                    onClick={toggleTheme}
+                    className="p-2 text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors"
+                    aria-label="Toggle theme"
+                  >
+                    {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+                  </button>
                   <Link
                     href="/login"
                     className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text rounded-lg transition-colors"

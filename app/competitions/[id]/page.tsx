@@ -8,6 +8,8 @@ import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import { LeaderboardSkeleton, StatCardSkeleton } from "@/components/Skeleton";
 import { Trophy, Medal, ArrowLeft, Calendar, Zap } from "lucide-react";
+import CountdownTimer from "@/components/CountdownTimer";
+import Confetti from "@/components/Confetti";
 import Link from "next/link";
 
 interface LeaderboardEntry {
@@ -113,6 +115,7 @@ export default function CompetitionDetailPage() {
     <div className="min-h-screen">
       <Navbar />
 
+      <Confetti show={!loading && myRank?.rank === 1} />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 animate-fade-in">
         <Link
           href="/competitions"
@@ -149,6 +152,17 @@ export default function CompetitionDetailPage() {
                 {competition.status}
               </span>
             </div>
+          </div>
+        )}
+
+        {/* Timer */}
+        {competition && competition.status !== "closed" && (
+          <div className="mb-6">
+            <CountdownTimer
+              endDate={competition.end_date}
+              startDate={competition.start_date}
+              status={competition.status}
+            />
           </div>
         )}
 

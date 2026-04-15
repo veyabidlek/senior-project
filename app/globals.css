@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Bento Design System Tokens */
+  /* Bento Design System Tokens — Light */
   --color-primary: #FAD4C0;
   --color-secondary: #80A1C1;
   --color-success: #16A34A;
@@ -26,6 +26,22 @@ body {
   background-color: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-sans);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Dark mode overrides */
+html[data-theme="dark"] {
+  --color-primary: #8B6F5E;
+  --color-secondary: #6B8FAF;
+  --color-surface: #0F1117;
+  --color-surface-raised: #1A1D27;
+  --color-surface-sunken: #141620;
+  --color-surface-overlay: #F5F5F5;
+  --color-text: #E5E7EB;
+  --color-text-muted: #9CA3AF;
+  --color-text-inverse: #111827;
+  --color-border: #2A2D3A;
+  --color-border-focus: #6B8FAF;
 }
 
 /* Custom scrollbar */
@@ -79,6 +95,12 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes confettiBurst {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
 }
 
 .animate-fade-in {
