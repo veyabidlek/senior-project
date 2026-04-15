@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import NotificationCenter from "./NotificationCenter";
 import Image from "next/image";
 import { useState } from "react";
 import ReadingLogModal from "./ReadingLogModal";
@@ -71,6 +72,11 @@ export default function Navbar() {
                     <BookOpen size={16} />
                     <span>Log Reading</span>
                   </button>
+                  <NotificationCenter
+                    streak={user.streak_current || 0}
+                    totalMinutes={user.total_minutes || 0}
+                    competitionsCount={0}
+                  />
                   <div className="w-px h-6 bg-border mx-2" />
                   <div className="flex items-center gap-3">
                     <div className="text-right">
