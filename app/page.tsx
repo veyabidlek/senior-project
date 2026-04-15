@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { Trophy, TrendingUp, Users, BookOpen, ArrowRight } from "lucide-react";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -22,9 +23,9 @@ export default function Home() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Hero - Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-16">
           {/* Main hero card - spans 2 cols */}
-          <div className="md:col-span-2 bg-surface-raised rounded-2xl p-8 sm:p-10 border border-border">
+          <div className="sm:col-span-2 bg-surface-raised rounded-2xl p-6 sm:p-8 lg:p-10 border border-border">
             <div className="flex items-center gap-2 mb-4">
               <BookOpen size={16} className="text-secondary" />
               <span className="text-sm text-text-muted font-medium">
@@ -147,6 +148,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

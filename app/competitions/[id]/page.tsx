@@ -121,21 +121,21 @@ export default function CompetitionDetailPage() {
             <StatCardSkeleton />
           </div>
         ) : myRank ? (
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-surface-raised rounded-2xl p-5 border border-border text-center animate-scale-in">
-              <div className="text-2xl font-bold text-text tracking-tight">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
+            <div className="bg-surface-raised rounded-2xl p-3 sm:p-5 border border-border text-center animate-scale-in">
+              <div className="text-xl sm:text-2xl font-bold text-text tracking-tight">
                 #{myRank.rank}
               </div>
               <div className="text-xs text-text-muted mt-1">Your Rank</div>
             </div>
-            <div className="bg-surface-raised rounded-2xl p-5 border border-border text-center animate-scale-in" style={{ animationDelay: "50ms" }}>
-              <div className="text-2xl font-bold text-secondary tracking-tight">
+            <div className="bg-surface-raised rounded-2xl p-3 sm:p-5 border border-border text-center animate-scale-in" style={{ animationDelay: "50ms" }}>
+              <div className="text-xl sm:text-2xl font-bold text-secondary tracking-tight">
                 {myRank.points.toLocaleString()}
               </div>
               <div className="text-xs text-text-muted mt-1">Points</div>
             </div>
-            <div className="bg-surface-raised rounded-2xl p-5 border border-border text-center animate-scale-in" style={{ animationDelay: "100ms" }}>
-              <div className="text-2xl font-bold text-text tracking-tight">
+            <div className="bg-surface-raised rounded-2xl p-3 sm:p-5 border border-border text-center animate-scale-in" style={{ animationDelay: "100ms" }}>
+              <div className="text-xl sm:text-2xl font-bold text-text tracking-tight">
                 {myRank.total_participants}
               </div>
               <div className="text-xs text-text-muted mt-1">Participants</div>

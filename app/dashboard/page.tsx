@@ -80,7 +80,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Bento Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {/* Total Reading Time */}
           <div className="bg-surface-raised rounded-2xl p-5 border border-border">
             <div className="flex items-center gap-2 mb-3">
