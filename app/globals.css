@@ -1,38 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-beige: #f5f1e8;
-  --color-secondary-beige: #e8e4d9;
-  --color-accent-blue: #7ba5c8;
-  --color-accent-teal: #5a9b8e;
-  --color-accent-coral: #e68b7c;
-  --color-accent-orange: #f4a460;
-  --color-accent-yellow: #f4d35e;
-  --color-text-dark: #2c2c2c;
-  --color-text-gray: #5c5c5c;
-  --color-white: #ffffff;
-  --color-black: #1a1a1a;
+  /* Bento Design System Tokens */
+  --color-primary: #FAD4C0;
+  --color-secondary: #80A1C1;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-surface: #FFF5E6;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-sunken: #FFF0D9;
+  --color-surface-overlay: #1A1A1A;
+  --color-text: #111827;
+  --color-text-muted: #6B7280;
+  --color-text-inverse: #FFFFFF;
+  --color-border: #E5E0D8;
+  --color-border-focus: #80A1C1;
+
+  /* Font families */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 body {
-  background-color: var(--color-primary-beige);
-  color: var(--color-text-dark);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-sans);
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-secondary-beige);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-accent-teal);
-  border-radius: 4px;
+  background: var(--color-border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent-blue);
+  background: var(--color-text-muted);
+}
+
+/* Focus visible styles */
+*:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

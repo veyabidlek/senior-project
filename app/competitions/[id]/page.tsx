@@ -5,7 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
-import { Trophy, Medal, Award } from "lucide-react";
+import { Trophy, Medal, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 interface LeaderboardEntry {
   user_id: string;
@@ -72,154 +73,148 @@ export default function CompetitionDetailPage() {
     }
   };
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
-  const getRankColor = (rank: number) => {
-    if (rank === 1) return "text-yellow-400";
-    if (rank === 2) return "text-gray-300";
-    if (rank === 3) return "text-orange-400";
-    return "text-[#74725A]";
-  };
-
-  const getRankMedal = (rank: number) => {
-    if (rank === 1) return <Medal size={20} className="text-yellow-400" />;
-    if (rank === 2) return <Medal size={20} className="text-gray-300" />;
-    if (rank === 3) return <Medal size={20} className="text-orange-400" />;
-    return null;
+  const getRankDisplay = (rank: number) => {
+    if (rank === 1)
+      return (
+        <div className="flex items-center gap-1.5">
+          <Medal size={16} className="text-warning" />
+          <span className="text-warning font-bold">1st</span>
+        </div>
+      );
+    if (rank === 2)
+      return (
+        <div className="flex items-center gap-1.5">
+          <Medal size={16} className="text-text-muted" />
+          <span className="text-text-muted font-bold">2nd</span>
+        </div>
+      );
+    if (rank === 3)
+      return (
+        <div className="flex items-center gap-1.5">
+          <Medal size={16} className="text-primary" />
+          <span className="text-primary font-bold">3rd</span>
+        </div>
+      );
+    return <span className="text-text-muted font-medium">#{rank}</span>;
   };
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <Link
+          href="/competitions"
+          className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-6"
+        >
+          <ArrowLeft size={14} />
+          Back to competitions
+        </Link>
+
         {error && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-500 rounded-lg text-red-200">
+          <div className="mb-6 px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm">
             {error}
           </div>
         )}
 
+        {/* Stats cards - Bento grid */}
         {myRank && (
-          <div className="bg-[#1F1F1F] p-6 rounded-lg border border-[#262524] mb-8">
-            <h2 className="text-xl font-bold text-[#DDEEC6] mb-4">
-              Your Performance
-            </h2>
-            <div className="grid md:grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-3xl font-bold text-[#DDEEC6]">
-                  #{myRank.rank}
-                </div>
-                <div className="text-sm text-[#74725A]">Your Rank</div>
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-surface-raised rounded-2xl p-5 border border-border text-center">
+              <div className="text-2xl font-bold text-text tracking-tight">
+                #{myRank.rank}
               </div>
-              <div>
-                <div className="text-3xl font-bold text-[#DDEEC6]">
-                  {myRank.points}
-                </div>
-                <div className="text-sm text-[#74725A]">Points</div>
+              <div className="text-xs text-text-muted mt-1">Your Rank</div>
+            </div>
+            <div className="bg-surface-raised rounded-2xl p-5 border border-border text-center">
+              <div className="text-2xl font-bold text-secondary tracking-tight">
+                {myRank.points.toLocaleString()}
               </div>
-              <div>
-                <div className="text-3xl font-bold text-[#DDEEC6]">
-                  {myRank.total_participants}
-                </div>
-                <div className="text-sm text-[#74725A]">Total Participants</div>
+              <div className="text-xs text-text-muted mt-1">Points</div>
+            </div>
+            <div className="bg-surface-raised rounded-2xl p-5 border border-border text-center">
+              <div className="text-2xl font-bold text-text tracking-tight">
+                {myRank.total_participants}
               </div>
+              <div className="text-xs text-text-muted mt-1">Participants</div>
             </div>
           </div>
         )}
 
         {!myRank && !loading && (
-          <div className="bg-[#1F1F1F] p-6 rounded-lg border border-[#262524] mb-8 text-center">
-            <h2 className="text-xl font-bold text-[#DDEEC6] mb-2">
+          <div className="bg-secondary/10 rounded-2xl border border-secondary/20 p-6 mb-6 text-center">
+            <h2 className="text-base font-semibold text-text mb-1">
               Join the Competition
             </h2>
-            <p className="text-[#74725A] mb-4">
+            <p className="text-sm text-text-muted mb-4">
               You haven&apos;t joined this competition yet
             </p>
             <button
               onClick={handleJoin}
               disabled={joining}
-              className="px-6 py-3 bg-[#DDEEC6] text-[#000013] rounded-lg hover:bg-[#74725A] hover:text-[#DDEEC6] transition-colors font-medium disabled:opacity-50"
+              className="px-5 py-2.5 bg-secondary text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium disabled:opacity-40 text-sm"
             >
               {joining ? "Joining..." : "Join Now"}
             </button>
           </div>
         )}
 
-        <div className="bg-[#1F1F1F] rounded-lg border border-[#262524] overflow-hidden">
-          <div className="p-6 border-b border-[#262524]">
-            <h2 className="text-2xl font-bold text-[#DDEEC6]">Leaderboard</h2>
+        {/* Leaderboard */}
+        <div className="bg-surface-raised rounded-2xl border border-border overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center gap-2">
+            <Trophy size={16} className="text-warning" />
+            <h2 className="text-base font-semibold text-text">Leaderboard</h2>
           </div>
 
           {loading ? (
-            <div className="p-12 text-center text-[#74725A]">
-              Loading leaderboard...
+            <div className="flex justify-center py-16">
+              <div className="w-6 h-6 border-2 border-secondary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : leaderboard.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="mb-4 flex justify-center">
-                <Trophy size={64} className="text-[#74725A]" />
+            <div className="py-16 text-center">
+              <div className="w-14 h-14 bg-surface-sunken rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <Trophy size={24} className="text-text-muted" />
               </div>
-              <p className="text-[#74725A]">
+              <p className="text-sm text-text-muted">
                 No participants yet. Be the first to join!
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[#262524]">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-[#74725A] uppercase tracking-wider">
-                      Rank
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-[#74725A] uppercase tracking-wider">
-                      Player
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-[#74725A] uppercase tracking-wider">
-                      Points
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#262524]">
-                  {leaderboard.map((entry) => (
-                    <tr
-                      key={entry.user_id}
-                      className={`${
-                        entry.user_id === user.id
-                          ? "bg-[#262524]"
-                          : "hover:bg-[#1E1F1F]"
-                      } transition-colors`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div
-                          className={`flex items-center gap-2 text-lg font-bold ${getRankColor(
-                            entry.rank
-                          )}`}
-                        >
-                          {getRankMedal(entry.rank)}
-                          <span>#{entry.rank}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-[#DDEEC6] font-medium">
-                          {entry.display_name}
-                          {entry.user_id === user.id && (
-                            <span className="ml-2 text-xs text-[#74725A]">
-                              (You)
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-[#DDEEC6] text-lg font-bold">
-                          {entry.points.toLocaleString()}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="divide-y divide-border">
+              {leaderboard.map((entry) => (
+                <div
+                  key={entry.user_id}
+                  className={`flex items-center justify-between px-5 py-3.5 ${
+                    entry.user_id === user.id
+                      ? "bg-secondary/5"
+                      : "hover:bg-surface-sunken"
+                  } transition-colors`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 text-center">
+                      {getRankDisplay(entry.rank)}
+                    </div>
+                    <div className="w-8 h-8 rounded-lg bg-primary/40 flex items-center justify-center text-xs font-bold text-text">
+                      {entry.display_name[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-text">
+                        {entry.display_name}
+                      </span>
+                      {entry.user_id === user.id && (
+                        <span className="ml-2 text-xs text-secondary font-medium">
+                          You
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold text-text font-mono">
+                    {entry.points.toLocaleString()}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

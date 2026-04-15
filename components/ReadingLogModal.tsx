@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { api } from "@/lib/api";
-import { X, BookOpen } from "lucide-react";
+import { X, BookOpen, Check } from "lucide-react";
 
 interface ReadingLogModalProps {
   isOpen: boolean;
@@ -68,66 +68,66 @@ export default function ReadingLogModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div className="bg-surface-raised rounded-2xl shadow-2xl max-w-md w-full p-6 relative border border-border">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-[#E8E4D9] rounded-full transition-colors"
+          className="absolute top-4 right-4 p-1.5 hover:bg-surface-sunken rounded-lg transition-colors"
+          aria-label="Close"
         >
-          <X size={20} className="text-[#5C5C5C]" />
+          <X size={18} className="text-text-muted" />
         </button>
 
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#7BA5C8] to-[#5A9B8E] rounded-2xl flex items-center justify-center">
-            <BookOpen size={24} className="text-white" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+            <BookOpen size={20} className="text-text-inverse" />
           </div>
-          <h2 className="text-2xl font-bold text-[#2C2C2C]">
-            Log Reading Time
-          </h2>
+          <h2 className="text-xl font-semibold text-text">Log Reading Time</h2>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg text-red-700 text-sm">
+          <div className="mb-4 px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-300 rounded-lg text-green-700 text-sm">
-            ✓ Reading time logged successfully!
+          <div className="mb-4 px-4 py-3 bg-success/10 border border-success/20 rounded-xl text-success text-sm flex items-center gap-2">
+            <Check size={16} />
+            Reading time logged successfully!
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-[#2C2C2C] mb-3 font-medium">
+            <label className="block text-sm font-medium text-text mb-3">
               How many minutes did you read?
             </label>
 
             {/* Preset Time Options */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4">
               {presetOptions.map((option) => (
                 <button
                   key={option}
                   type="button"
                   onClick={() => handlePresetClick(option)}
-                  className={`px-4 py-4 rounded-2xl font-medium transition-all ${
+                  className={`py-3 rounded-xl font-medium transition-all text-center ${
                     selectedPreset === option
-                      ? "bg-gradient-to-br from-[#7BA5C8] to-[#5A9B8E] text-white shadow-md scale-105"
-                      : "bg-[#F5F1E8] text-[#2C2C2C] hover:bg-[#E8E4D9] border border-[#E8E4D9]"
+                      ? "bg-secondary text-text-inverse shadow-sm"
+                      : "bg-surface-sunken text-text hover:bg-border border border-border"
                   }`}
                 >
-                  <div className="text-2xl font-bold">{option}</div>
-                  <div className="text-xs opacity-80">min</div>
+                  <div className="text-lg font-bold">{option}</div>
+                  <div className="text-[11px] opacity-70">min</div>
                 </button>
               ))}
             </div>
 
             {/* Custom Input */}
-            <div className="pt-4 border-t border-[#E8E4D9]">
+            <div className="pt-4 border-t border-border">
               <label
                 htmlFor="custom"
-                className="block text-[#5C5C5C] mb-2 text-sm"
+                className="block text-text-muted mb-2 text-sm"
               >
                 Or enter a custom time:
               </label>
@@ -136,8 +136,8 @@ export default function ReadingLogModal({
                 id="custom"
                 value={customMinutes}
                 onChange={(e) => handleCustomChange(e.target.value)}
-                className={`w-full px-4 py-3 bg-[#F5F1E8] text-[#2C2C2C] border rounded-2xl focus:outline-none focus:border-[#7BA5C8] focus:ring-2 focus:ring-[#7BA5C8]/20 text-lg ${
-                  customMinutes ? "border-[#7BA5C8]" : "border-[#E8E4D9]"
+                className={`w-full px-4 py-3 bg-surface-sunken text-text border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 ${
+                  customMinutes ? "border-border-focus" : "border-border"
                 }`}
                 placeholder="Enter custom minutes"
                 min="1"
@@ -145,25 +145,19 @@ export default function ReadingLogModal({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex gap-3">
             <button
               type="submit"
-              disabled={
-                loading || success || (!selectedPreset && !customMinutes)
-              }
-              className="flex-1 px-6 py-3 bg-[#1A1A1A] text-white rounded-full hover:bg-[#2C2C2C] transition-all font-medium disabled:opacity-50 shadow-md"
+              disabled={loading || success || (!selectedPreset && !customMinutes)}
+              className="flex-1 px-5 py-3 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium disabled:opacity-40 text-sm"
             >
-              {loading
-                ? "Logging..."
-                : success
-                ? "✓ Logged!"
-                : "Log Reading Time"}
+              {loading ? "Logging..." : success ? "Logged!" : "Log Reading Time"}
             </button>
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-6 py-3 bg-white text-[#2C2C2C] border border-[#E8E4D9] rounded-full hover:bg-[#F5F1E8] transition-all font-medium disabled:opacity-50"
+              className="px-5 py-3 bg-surface-sunken text-text border border-border rounded-xl hover:bg-border transition-all font-medium disabled:opacity-40 text-sm"
             >
               Cancel
             </button>

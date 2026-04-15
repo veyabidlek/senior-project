@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { BookOpen } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -37,21 +38,29 @@ export default function LoginPage() {
     <div className="min-h-screen">
       <Navbar />
 
-      <div className="max-w-md mx-auto px-4 py-16">
-        <div className="bg-[#1F1F1F] p-8 rounded-lg border border-[#262524]">
-          <h1 className="text-3xl font-bold text-[#DDEEC6] mb-6 text-center">
-            Login to PowerBook
+      <div className="max-w-sm mx-auto px-4 py-16 sm:py-24">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <BookOpen size={24} className="text-text" />
+          </div>
+          <h1 className="text-2xl font-bold text-text tracking-tight">
+            Welcome back
           </h1>
+          <p className="text-sm text-text-muted mt-1">
+            Sign in to your PowerBook account
+          </p>
+        </div>
 
+        <div className="bg-surface-raised p-6 rounded-2xl border border-border">
           {error && (
-            <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded-lg text-red-200">
+            <div className="mb-4 px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-[#DDEEC6] mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-text mb-1.5">
                 Email
               </label>
               <input
@@ -59,13 +68,14 @@ export default function LoginPage() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 bg-[#262524] text-[#DDEEC6] border border-[#74725A] rounded-lg focus:outline-none focus:border-[#DDEEC6]"
+                className="w-full px-4 py-2.5 bg-surface-sunken text-text border border-border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 text-sm"
+                placeholder="you@example.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-[#DDEEC6] mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-text mb-1.5">
                 Password
               </label>
               <input
@@ -73,7 +83,8 @@ export default function LoginPage() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-[#262524] text-[#DDEEC6] border border-[#74725A] rounded-lg focus:outline-none focus:border-[#DDEEC6]"
+                className="w-full px-4 py-2.5 bg-surface-sunken text-text border border-border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 text-sm"
+                placeholder="Your password"
                 required
               />
             </div>
@@ -81,19 +92,19 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-3 bg-[#DDEEC6] text-[#000013] rounded-lg hover:bg-[#74725A] hover:text-[#DDEEC6] transition-colors font-medium disabled:opacity-50"
+              className="w-full px-4 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium disabled:opacity-40 text-sm mt-2"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
-
-          <p className="mt-6 text-center text-[#74725A]">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#DDEEC6] hover:underline">
-              Register here
-            </Link>
-          </p>
         </div>
+
+        <p className="mt-6 text-center text-sm text-text-muted">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-secondary font-medium hover:underline">
+            Create one
+          </Link>
+        </p>
       </div>
     </div>
   );

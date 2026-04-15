@@ -5,6 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function CreateCompetitionPage() {
   const { user } = useAuth();
@@ -22,9 +24,7 @@ export default function CreateCompetitionPage() {
     }
   }, [user, router]);
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,23 +57,31 @@ export default function CreateCompetitionPage() {
     <div className="min-h-screen">
       <Navbar />
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-[#E8E4D9]">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#2C2C2C] mb-6">
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <Link
+          href="/competitions"
+          className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-6"
+        >
+          <ArrowLeft size={14} />
+          Back to competitions
+        </Link>
+
+        <div className="bg-surface-raised p-6 sm:p-8 rounded-2xl border border-border">
+          <h1 className="text-xl font-bold text-text mb-6 tracking-tight">
             Create New Competition
           </h1>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg text-red-700">
+            <div className="mb-4 px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
                 htmlFor="name"
-                className="block text-[#2C2C2C] mb-2 font-medium"
+                className="block text-sm font-medium text-text mb-1.5"
               >
                 Competition Name
               </label>
@@ -82,17 +90,17 @@ export default function CreateCompetitionPage() {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-[#F5F1E8] text-[#2C2C2C] border border-[#E8E4D9] rounded-2xl focus:outline-none focus:border-[#7BA5C8] focus:ring-2 focus:ring-[#7BA5C8]/20"
+                className="w-full px-4 py-2.5 bg-surface-sunken text-text border border-border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 text-sm"
                 placeholder="January Reading Challenge"
                 required
               />
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label
                   htmlFor="startDate"
-                  className="block text-[#2C2C2C] mb-2 font-medium"
+                  className="block text-sm font-medium text-text mb-1.5"
                 >
                   Start Date
                 </label>
@@ -101,7 +109,7 @@ export default function CreateCompetitionPage() {
                   id="startDate"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#F5F1E8] text-[#2C2C2C] border border-[#E8E4D9] rounded-2xl focus:outline-none focus:border-[#7BA5C8] focus:ring-2 focus:ring-[#7BA5C8]/20"
+                  className="w-full px-3 py-2.5 bg-surface-sunken text-text border border-border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 text-sm"
                   required
                 />
               </div>
@@ -109,7 +117,7 @@ export default function CreateCompetitionPage() {
               <div>
                 <label
                   htmlFor="endDate"
-                  className="block text-[#2C2C2C] mb-2 font-medium"
+                  className="block text-sm font-medium text-text mb-1.5"
                 >
                   End Date
                 </label>
@@ -118,7 +126,7 @@ export default function CreateCompetitionPage() {
                   id="endDate"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#F5F1E8] text-[#2C2C2C] border border-[#E8E4D9] rounded-2xl focus:outline-none focus:border-[#7BA5C8] focus:ring-2 focus:ring-[#7BA5C8]/20"
+                  className="w-full px-3 py-2.5 bg-surface-sunken text-text border border-border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 text-sm"
                   required
                 />
               </div>
@@ -127,7 +135,7 @@ export default function CreateCompetitionPage() {
             <div>
               <label
                 htmlFor="pointsPerMinute"
-                className="block text-[#2C2C2C] mb-2 font-medium"
+                className="block text-sm font-medium text-text mb-1.5"
               >
                 Points Per Minute
               </label>
@@ -137,26 +145,26 @@ export default function CreateCompetitionPage() {
                 value={pointsPerMinute}
                 onChange={(e) => setPointsPerMinute(e.target.value)}
                 min="1"
-                className="w-full px-4 py-3 bg-[#F5F1E8] text-[#2C2C2C] border border-[#E8E4D9] rounded-2xl focus:outline-none focus:border-[#7BA5C8] focus:ring-2 focus:ring-[#7BA5C8]/20"
+                className="w-full px-4 py-2.5 bg-surface-sunken text-text border border-border rounded-xl focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 text-sm"
                 required
               />
-              <p className="mt-2 text-sm text-[#5C5C5C]">
+              <p className="mt-1.5 text-xs text-text-muted">
                 Points awarded per minute of reading
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
+            <div className="flex gap-3 pt-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-3 bg-[#1A1A1A] text-white rounded-full hover:bg-[#2C2C2C] transition-all font-medium disabled:opacity-50 shadow-md"
+                className="flex-1 px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium disabled:opacity-40 text-sm"
               >
                 {loading ? "Creating..." : "Create Competition"}
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/competitions")}
-                className="px-6 py-3 bg-white text-[#2C2C2C] border border-[#E8E4D9] rounded-full hover:bg-[#F5F1E8] transition-all font-medium"
+                className="px-5 py-2.5 bg-surface-sunken text-text border border-border rounded-xl hover:bg-border transition-colors font-medium text-sm"
               >
                 Cancel
               </button>

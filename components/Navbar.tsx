@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { BarChart3, Plus, Search, Bell, BookOpen } from "lucide-react";
+import { BarChart3, Plus, BookOpen, LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import ReadingLogModal from "./ReadingLogModal";
@@ -10,6 +10,7 @@ import ReadingLogModal from "./ReadingLogModal";
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [showReadingModal, setShowReadingModal] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <>
@@ -17,12 +18,12 @@ export default function Navbar() {
         isOpen={showReadingModal}
         onClose={() => setShowReadingModal(false)}
       />
-      <nav className="bg-[#F5F1E8] border-b border-[#E8E4D9]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="flex justify-between items-center h-16 sm:h-20">
+      <nav className="bg-surface-raised border-b border-border sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-sm relative">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl overflow-hidden bg-surface shadow-sm relative">
                 <Image
                   src="/power-book-logo.jpeg"
                   alt="PowerBook Logo"
@@ -31,59 +32,134 @@ export default function Navbar() {
                   priority
                 />
               </div>
-              <span className="text-lg sm:text-xl font-bold text-[#2C2C2C]">
+              <span className="text-base font-semibold text-text tracking-tight">
                 PowerBook
               </span>
             </Link>
 
-            {/* Navigation Pills */}
-            <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
                   <Link
                     href="/competitions"
-                    className="hidden md:flex px-4 lg:px-6 py-2 lg:py-3 bg-white text-[#2C2C2C] rounded-full hover:bg-[#E8E4D9] transition-all items-center space-x-2 shadow-sm text-sm lg:text-base"
+                    className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <BarChart3 size={18} />
-                    <span className="hidden lg:inline">Competitions</span>
+                    <BarChart3 size={16} />
+                    <span>Competitions</span>
                   </Link>
                   <Link
                     href="/create-competition"
-                    className="hidden md:flex px-4 lg:px-6 py-2 lg:py-3 bg-white text-[#2C2C2C] rounded-full hover:bg-[#E8E4D9] transition-all items-center space-x-2 shadow-sm text-sm lg:text-base"
+                    className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <Plus size={18} />
-                    <span className="hidden lg:inline">Create</span>
+                    <Plus size={16} />
+                    <span>Create</span>
                   </Link>
                   <button
                     onClick={() => setShowReadingModal(true)}
-                    className="px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-[#7BA5C8] to-[#5A9B8E] text-white rounded-full hover:opacity-90 transition-all items-center space-x-2 shadow-md text-sm lg:text-base font-medium flex"
+                    className="px-4 py-2 bg-secondary text-text-inverse text-sm font-medium rounded-lg hover:opacity-90 transition-colors flex items-center gap-2"
                   >
-                    <BookOpen size={18} />
-                    <span className="hidden sm:inline">Log Reading</span>
+                    <BookOpen size={16} />
+                    <span>Log Reading</span>
                   </button>
-                  <button className="hidden sm:flex w-10 h-10 rounded-full bg-white text-[#2C2C2C] hover:bg-[#E8E4D9] transition-all items-center justify-center shadow-sm">
-                    <Search size={18} />
-                  </button>
-                  <div className="flex items-center space-x-2 sm:space-x-3">
-                    <div className="hidden sm:block text-right">
-                      <div className="text-xs lg:text-sm font-medium text-[#2C2C2C]">
+                  <div className="w-px h-6 bg-border mx-2" />
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-text leading-tight">
                         {user.display_name}
                       </div>
-                      <div className="text-[10px] lg:text-xs text-[#5C5C5C]">
+                      <div className="text-xs text-text-muted leading-tight">
                         @{user.email.split("@")[0]}
                       </div>
                     </div>
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#7BA5C8] to-[#5A9B8E] flex items-center justify-center text-base sm:text-lg font-bold text-white relative shadow-md">
+                    <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-text">
                       {user.display_name[0].toUpperCase()}
-                      <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-[#E68B7C] rounded-full flex items-center justify-center">
-                        <Bell size={10} className="text-white sm:w-3 sm:h-3" />
-                      </div>
                     </div>
                   </div>
                   <button
                     onClick={logout}
-                    className="hidden sm:block px-4 lg:px-5 py-2 lg:py-3 bg-white text-[#5C5C5C] rounded-full hover:bg-[#E8E4D9] hover:text-[#2C2C2C] transition-all text-xs lg:text-sm shadow-sm"
+                    className="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
+                    aria-label="Logout"
                   >
+                    <LogOut size={16} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text rounded-lg transition-colors"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="px-4 py-2 bg-text text-text-inverse text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 text-text-muted hover:text-text rounded-lg"
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+
+          {/* Mobile Nav */}
+          {mobileOpen && (
+            <div className="md:hidden border-t border-border py-3 space-y-1">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3 px-3 py-2 mb-2">
+                    <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-text">
+                      {user.display_name[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-text">{user.display_name}</div>
+                      <div className="text-xs text-text-muted">@{user.email.split("@")[0]}</div>
+                    </div>
+                  </div>
+                  <Link
+                    href="/competitions"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg"
+                  >
+                    <BarChart3 size={16} />
+                    Competitions
+                  </Link>
+                  <Link
+                    href="/create-competition"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg"
+                  >
+                    <Plus size={16} />
+                    Create Competition
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setShowReadingModal(true);
+                      setMobileOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-secondary font-medium hover:bg-secondary/10 rounded-lg"
+                  >
+                    <BookOpen size={16} />
+                    Log Reading
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger hover:bg-danger/10 rounded-lg"
+                  >
+                    <LogOut size={16} />
                     Logout
                   </button>
                 </>
@@ -91,20 +167,22 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="px-4 sm:px-6 py-2 sm:py-3 text-[#2C2C2C] rounded-full hover:bg-[#E8E4D9] transition-all text-sm sm:text-base"
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-3 py-2 text-sm text-text-muted hover:text-text rounded-lg"
                   >
                     Sign in
                   </Link>
                   <Link
                     href="/register"
-                    className="px-4 sm:px-6 py-2 sm:py-3 bg-[#1A1A1A] text-white rounded-full hover:bg-[#2C2C2C] transition-all font-medium shadow-md text-sm sm:text-base"
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-3 py-2 text-sm font-medium text-text bg-surface-sunken rounded-lg"
                   >
                     Get Started
                   </Link>
                 </>
               )}
             </div>
-          </div>
+          )}
         </div>
       </nav>
     </>
