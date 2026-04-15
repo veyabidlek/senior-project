@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
+import { useToast } from "@/components/Toast";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -17,6 +18,7 @@ export default function CreateCompetitionPage() {
   const [pointsPerMinute, setPointsPerMinute] = useState("1");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!user) {
@@ -44,6 +46,7 @@ export default function CreateCompetitionPage() {
         end_date: new Date(endDate).toISOString(),
         points_per_minute: parseInt(pointsPerMinute),
       });
+      toast("Competition created!", "success");
       router.push(`/competitions/${competition.id}`);
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
