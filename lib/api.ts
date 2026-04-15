@@ -128,6 +128,14 @@ class ApiClient {
     return response.data?.data || response.data;
   }
 
+  // Get a single competition by finding it from the list
+  async getCompetition(id: string) {
+    const competitions = await this.listCompetitions();
+    return competitions.find(
+      (c: { id: string }) => c.id === id
+    ) || null;
+  }
+
   // Reading endpoints
   async logReading(data: {
     minutes: number;

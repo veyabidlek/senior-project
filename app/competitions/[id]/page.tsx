@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import { LeaderboardSkeleton, StatCardSkeleton } from "@/components/Skeleton";
-import { Trophy, Medal, ArrowLeft } from "lucide-react";
+import { Trophy, Medal, ArrowLeft, Calendar, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface LeaderboardEntry {
@@ -30,6 +30,13 @@ export default function CompetitionDetailPage() {
   const { toast } = useToast();
   const competitionId = params.id as string;
 
+  const [competition, setCompetition] = useState<{
+    name: string;
+    start_date: string;
+    end_date: string;
+    points_per_minute: number;
+    status: string;
+  } | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [myRank, setMyRank] = useState<MyRank | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,12 +53,14 @@ export default function CompetitionDetailPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [leaderboardData, rankData] = await Promise.all([
+      const [leaderboardData, rankData, compData] = await Promise.all([
         api.getLeaderboard(competitionId, 50),
         api.getMyRank(competitionId).catch(() => null),
+        api.getCompetition(competitionId).catch(() => null),
       ]);
       setLeaderboard(leaderboardData);
       setMyRank(rankData);
+      setCompetition(compData);
     } catch {
       toast("Failed to load competition data", "error");
     } finally {
@@ -112,6 +121,36 @@ export default function CompetitionDetailPage() {
           <ArrowLeft size={14} />
           Back to competitions
         </Link>
+
+        {/* Competition header */}
+        {competition && (
+          <div className="mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-text tracking-tight mb-2">
+              {competition.name}
+            </h1>
+            <div className="flex flex-wrap gap-4 text-sm text-text-muted">
+              <div className="flex items-center gap-1.5">
+                <Calendar size={14} />
+                {new Date(competition.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                {" \u2013 "}
+                {new Date(competition.end_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Zap size={14} />
+                {competition.points_per_minute} pts/min
+              </div>
+              <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${
+                competition.status === "active"
+                  ? "bg-success/10 text-success"
+                  : competition.status === "upcoming"
+                  ? "bg-secondary/10 text-secondary"
+                  : "bg-surface-sunken text-text-muted"
+              }`}>
+                {competition.status}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Stats cards */}
         {loading ? (

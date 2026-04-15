@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { UserPlus } from "lucide-react";
+import { useToast } from "@/components/Toast";
 
 export default function RegisterPage() {
   const [displayName, setDisplayName] = useState("");
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,7 @@ export default function RegisterPage() {
 
     try {
       await register(displayName, email, password);
+      toast("Account created! Please sign in.", "success");
       router.push("/login");
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };

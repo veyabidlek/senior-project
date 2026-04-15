@@ -61,17 +61,17 @@ export default function Home() {
             ) : (
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href="/competitions"
+                  href="/dashboard"
                   className="px-6 py-3 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium text-sm flex items-center gap-2"
                 >
-                  View Competitions
+                  Go to Dashboard
                   <ArrowRight size={16} />
                 </Link>
                 <Link
-                  href="/create-competition"
+                  href="/competitions"
                   className="px-6 py-3 bg-surface-sunken text-text border border-border rounded-xl hover:bg-border transition-colors font-medium text-sm"
                 >
-                  Create Competition
+                  Browse Competitions
                 </Link>
               </div>
             )}
@@ -129,10 +129,10 @@ export default function Home() {
               </div>
               {user ? (
                 <Link
-                  href="/competitions"
+                  href="/dashboard"
                   className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                 >
-                  Browse competitions
+                  Go to dashboard
                   <ArrowRight size={14} />
                 </Link>
               ) : (
