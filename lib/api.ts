@@ -141,6 +141,13 @@ class ApiClient {
     ) || null;
   }
 
+  // Reading history
+  async getReadingHistory() {
+    const response = await this.client.get("/reading/history");
+    const data = response.data?.data || response.data;
+    return data?.readings || [];
+  }
+
   // Reading endpoints
   async logReading(data: {
     minutes: number;
