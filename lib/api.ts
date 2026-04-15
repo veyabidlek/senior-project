@@ -111,14 +111,19 @@ class ApiClient {
     const response = await this.client.get(`/competitions/${id}/leaderboard`, {
       params: { limit },
     });
-    // Handle nested data structure
-    return response.data?.data || response.data || [];
+    // data.data can be an empty array (falsy) — check explicitly
+    const data = response.data?.data;
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(response.data)) return response.data;
+    return [];
   }
 
   async getMyRank(id: string) {
     const response = await this.client.get(`/competitions/${id}/rank/me`);
-    // Handle nested data structure
-    return response.data?.data || response.data;
+    const data = response.data?.data || response.data;
+    // API returns {found: false} when user hasn't joined — treat as null
+    if (data && data.found === false) return null;
+    return data;
   }
 
   async getUserRank(id: string, userId: string) {
