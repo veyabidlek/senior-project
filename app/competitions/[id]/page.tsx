@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import { LeaderboardSkeleton, StatCardSkeleton } from "@/components/Skeleton";
-import { Trophy, Medal, ArrowLeft, Calendar, Zap } from "lucide-react";
+import { Trophy, Medal, ArrowLeft, Calendar, Zap, Share2 } from "lucide-react";
 import CountdownTimer from "@/components/CountdownTimer";
 import Confetti from "@/components/Confetti";
 import Link from "next/link";
@@ -128,9 +128,22 @@ export default function CompetitionDetailPage() {
         {/* Competition header */}
         {competition && (
           <div className="mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold text-text tracking-tight mb-2">
-              {competition.name}
-            </h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-xl sm:text-2xl font-bold text-text tracking-tight mb-2">
+                {competition.name}
+              </h1>
+              <button
+                onClick={() => {
+                  const url = window.location.href;
+                  navigator.clipboard.writeText(url);
+                  toast("Link copied! Share it with friends.", "success");
+                }}
+                className="shrink-0 p-2 text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors"
+                aria-label="Share competition"
+              >
+                <Share2 size={16} />
+              </button>
+            </div>
             <div className="flex flex-wrap gap-4 text-sm text-text-muted">
               <div className="flex items-center gap-1.5">
                 <Calendar size={14} />

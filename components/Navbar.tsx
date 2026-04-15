@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard, Sun, Moon } from "lucide-react";
+import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard, Sun, Moon, Library } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import NotificationCenter from "./NotificationCenter";
 import Image from "next/image";
@@ -59,11 +59,11 @@ export default function Navbar() {
                     <span>Competitions</span>
                   </Link>
                   <Link
-                    href="/create-competition"
+                    href="/books"
                     className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <Plus size={16} />
-                    <span>Create</span>
+                    <Library size={16} />
+                    <span>Books</span>
                   </Link>
                   <button
                     onClick={() => setShowReadingModal(true)}
@@ -87,9 +87,9 @@ export default function Navbar() {
                         @{user.email.split("@")[0]}
                       </div>
                     </div>
-                    <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-text">
+                    <Link href="/profile" className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-text hover:opacity-80 transition-opacity">
                       {user.display_name[0].toUpperCase()}
-                    </div>
+                    </Link>
                   </div>
                   <button
                     onClick={toggleTheme}
@@ -172,12 +172,20 @@ export default function Navbar() {
                     Competitions
                   </Link>
                   <Link
-                    href="/create-competition"
+                    href="/books"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg"
                   >
-                    <Plus size={16} />
-                    Create Competition
+                    <Library size={16} />
+                    Books
+                  </Link>
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg"
+                  >
+                    <LayoutDashboard size={16} />
+                    Profile
                   </Link>
                   <button
                     onClick={() => {

@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import StreakCalendar from "@/components/StreakCalendar";
 import ReadingGoal from "@/components/ReadingGoal";
 import Badges from "@/components/Badges";
+import ReadingInsights from "@/components/ReadingInsights";
 import { api } from "@/lib/api";
 import {
   BookOpen,
@@ -150,6 +151,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+          <ReadingInsights readings={readings} totalMinutes={totalMinutes} />
           <Badges
             totalMinutes={totalMinutes}
             streak={streak}
