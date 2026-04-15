@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { BarChart3, Plus, BookOpen, LogOut, Menu, X } from "lucide-react";
+import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import ReadingLogModal from "./ReadingLogModal";
@@ -41,6 +41,13 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
+                  <Link
+                    href="/dashboard"
+                    className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <LayoutDashboard size={16} />
+                    <span>Dashboard</span>
+                  </Link>
                   <Link
                     href="/competitions"
                     className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors flex items-center gap-2"
@@ -126,6 +133,14 @@ export default function Navbar() {
                       <div className="text-xs text-text-muted">@{user.email.split("@")[0]}</div>
                     </div>
                   </div>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg"
+                  >
+                    <LayoutDashboard size={16} />
+                    Dashboard
+                  </Link>
                   <Link
                     href="/competitions"
                     onClick={() => setMobileOpen(false)}

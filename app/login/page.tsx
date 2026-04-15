@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push("/competitions");
+      router.push("/dashboard");
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(

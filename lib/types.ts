@@ -2,6 +2,8 @@ export interface User {
   id: string;
   display_name: string;
   email: string;
+  streak_current?: number;
+  total_minutes?: number;
 }
 
 export interface Competition {
