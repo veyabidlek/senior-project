@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { api } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { X, BookOpen, Check, Timer, Keyboard } from "lucide-react";
 
 interface ReadingLogModalProps {
@@ -13,6 +14,7 @@ export default function ReadingLogModal({
   isOpen,
   onClose,
 }: ReadingLogModalProps) {
+  const { refreshUser } = useAuth();
   const [mode, setMode] = useState<"manual" | "timer">("manual");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
   const [customMinutes, setCustomMinutes] = useState("");
@@ -66,6 +68,7 @@ export default function ReadingLogModal({
         source: "web",
         timestamp: new Date().toISOString(),
       });
+      await refreshUser();
       setSuccess(true);
       setSelectedPreset(null);
       setCustomMinutes("");

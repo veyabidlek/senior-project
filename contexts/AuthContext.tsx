@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import { api } from "@/lib/api";
@@ -20,6 +21,7 @@ interface AuthContextType {
     password: string
   ) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,24 +30,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      if (token) {
-        const userData = await api.getCurrentUser();
-        setUser(userData);
+      if (!token) {
+        setUser(null);
+        return;
       }
-    } catch (error) {
-      console.error("Auth check failed:", error);
-      localStorage.removeItem("token");
-    } finally {
-      setLoading(false);
+      const userData = await api.getCurrentUser();
+      setUser(userData);
+    } catch {
+      // Only clear token on explicit auth failures, not network errors
+      const token = localStorage.getItem("token");
+      if (token) {
+        // Token exists but failed — might be expired
+        localStorage.removeItem("token");
+        setUser(null);
+      }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    refreshUser().finally(() => setLoading(false));
+  }, [refreshUser]);
 
   const login = async (email: string, password: string) => {
     await api.login(email, password);
@@ -67,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

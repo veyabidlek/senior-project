@@ -26,11 +26,16 @@ class ApiClient {
       return config;
     });
 
-    // Add response interceptor for better error handling
+    // Add response interceptor — only clear token on auth-specific 401s
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response?.status === 401 && typeof window !== "undefined") {
+        if (
+          error.response?.status === 401 &&
+          typeof window !== "undefined" &&
+          error.response?.data?.error === "invalid Authorization format"
+        ) {
+          // Token is malformed or missing — clear it
           localStorage.removeItem("token");
         }
         return Promise.reject(error);
