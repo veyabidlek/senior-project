@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard, Sun, Moon, Library } from "lucide-react";
+import { BarChart3, Plus, BookOpen, LogOut, Menu, X, LayoutDashboard, Sun, Moon, Library, Sparkles } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import NotificationCenter from "./NotificationCenter";
 import Image from "next/image";
@@ -59,11 +59,11 @@ export default function Navbar() {
                     <span>Competitions</span>
                   </Link>
                   <Link
-                    href="/books"
+                    href="/activity"
                     className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <Library size={16} />
-                    <span>Books</span>
+                    <Sparkles size={16} />
+                    <span>Live</span>
                   </Link>
                   <button
                     onClick={() => setShowReadingModal(true)}
@@ -170,6 +170,14 @@ export default function Navbar() {
                   >
                     <BarChart3 size={16} />
                     Competitions
+                  </Link>
+                  <Link
+                    href="/activity"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-text-muted hover:text-text hover:bg-surface-sunken rounded-lg"
+                  >
+                    <Sparkles size={16} />
+                    Live Activity
                   </Link>
                   <Link
                     href="/books"
