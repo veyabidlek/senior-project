@@ -6,8 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
-import { CompetitionCardSkeleton } from "@/components/Skeleton";
-import { BookOpen, Plus, Calendar, Zap, Users, Check, LogIn } from "lucide-react";
+import { Plus, Calendar, Zap, Users, Check, LogIn } from "lucide-react";
 
 interface Competition {
   id: string;
@@ -16,12 +15,7 @@ interface Competition {
   end_date: string;
   points_per_minute: number;
   status: string;
-  participants?: Array<{
-    user: { id: string; display_name: string };
-    points: number;
-    days_read: number;
-    minutes_total: number;
-  }>;
+  participants?: Array<{ user: { id: string }; points: number }>;
 }
 
 export default function CompetitionsPage() {
@@ -33,12 +27,7 @@ export default function CompetitionsPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (user) {
-      loadCompetitions();
-    } else {
-      // Try loading competitions even without auth (will fail gracefully)
-      loadCompetitionsPublic();
-    }
+    loadCompetitions();
   }, [user, authLoading]);
 
   const loadCompetitions = async () => {
@@ -46,202 +35,89 @@ export default function CompetitionsPage() {
       setLoading(true);
       const data = await api.listCompetitions();
       setCompetitions(Array.isArray(data) ? data : []);
-    } catch {
-      toast("Failed to load competitions", "error");
-      setCompetitions([]);
-    } finally {
-      setLoading(false);
-    }
+    } catch { setCompetitions([]); }
+    finally { setLoading(false); }
   };
 
-  const loadCompetitionsPublic = async () => {
+  const handleJoin = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
     try {
-      setLoading(true);
-      const data = await api.listCompetitions();
-      setCompetitions(Array.isArray(data) ? data : []);
-    } catch {
-      // Not logged in — API may reject, that's fine
-      setCompetitions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleJoinCompetition = async (
-    competitionId: string,
-    e: React.MouseEvent
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      setJoiningId(competitionId);
-      await api.joinCompetition(competitionId);
-      toast("Joined competition!", "success");
+      setJoiningId(id);
+      await api.joinCompetition(id);
+      toast("Joined!", "success");
       await loadCompetitions();
-    } catch {
-      toast("Failed to join competition", "error");
-    } finally {
-      setJoiningId(null);
-    }
+    } catch { toast("Failed to join", "error"); }
+    finally { setJoiningId(null); }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const formatDate = (d: string) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const isJoined = (c: Competition) => c.participants?.some((p) => p.user.id === user?.id) ?? false;
 
-  const isUserParticipant = (competition: Competition) => {
-    if (!competition.participants || !user) return false;
-    return competition.participants.some((p) => p.user.id === user.id);
-  };
-
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-success/10 text-success border-success/20";
-      case "upcoming":
-        return "bg-secondary/10 text-secondary border-secondary/20";
-      default:
-        return "bg-surface-sunken text-text-muted border-border";
-    }
+  const statusStyle = (s: string) => {
+    if (s === "active" || s === "open") return "bg-success text-text-inverse";
+    if (s === "upcoming") return "bg-secondary text-text-inverse";
+    return "bg-surface-sunken text-text-muted";
   };
 
   return (
     <div className="min-h-screen">
       <Navbar />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 animate-fade-in">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-14 animate-fade-in">
+        <div className="flex justify-between items-start gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-text tracking-tight">
-              Competitions
-            </h1>
-            <p className="text-sm text-text-muted mt-1">
-              {user ? "Join a challenge or create your own" : "Browse active reading competitions"}
-            </p>
+            <h1 className="text-3xl font-black uppercase tracking-tighter text-text">Competitions</h1>
+            <p className="text-sm text-text-muted font-medium mt-1">{user ? "Join or create" : "Browse active challenges"}</p>
           </div>
           {user && (
-            <Link
-              href="/create-competition"
-              className="px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium flex items-center gap-2 text-sm active:scale-[0.98]"
-            >
-              <Plus size={16} />
-              <span>New Competition</span>
+            <Link href="/create-competition" className="px-5 py-2.5 bg-text text-text-inverse font-bold uppercase tracking-wider text-xs border-2 border-border hover:bg-primary transition-all flex items-center gap-2">
+              <Plus size={14} /> New
             </Link>
           )}
         </div>
 
-        {/* Login prompt for unauthenticated users */}
         {!user && !authLoading && (
-          <div className="bg-secondary/10 rounded-2xl border border-secondary/20 p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="border-4 border-primary p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-text">Want to join a competition?</p>
-              <p className="text-xs text-text-muted mt-0.5">Sign in or create an account to participate</p>
+              <p className="text-sm font-bold text-text">Want to compete?</p>
+              <p className="text-xs text-text-muted">Sign in to join competitions</p>
             </div>
-            <Link
-              href="/login"
-              className="px-4 py-2 bg-secondary text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
-            >
-              <LogIn size={14} />
-              Sign in
+            <Link href="/login" className="px-4 py-2 bg-primary text-text-inverse font-bold uppercase text-xs border-2 border-border flex items-center gap-2">
+              <LogIn size={12} /> Sign In
             </Link>
           </div>
         )}
 
         {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <CompetitionCardSkeleton key={i} />
-            ))}
-          </div>
+          <div className="text-center py-20 text-lg font-bold uppercase animate-pulse">Loading...</div>
         ) : competitions.length === 0 ? (
-          <div className="text-center py-20 animate-fade-in">
-            <div className="w-16 h-16 bg-surface-sunken rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <BookOpen size={28} className="text-text-muted" />
-            </div>
-            <h2 className="text-lg font-semibold text-text mb-1">
-              No competitions yet
-            </h2>
-            <p className="text-sm text-text-muted mb-6">
-              {user
-                ? "Be the first to create a reading competition!"
-                : "Check back later for new competitions"}
-            </p>
-            {user && (
-              <Link
-                href="/create-competition"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-all font-medium text-sm active:scale-[0.98]"
-              >
-                <Plus size={16} />
-                <span>Create One Now</span>
-              </Link>
-            )}
+          <div className="text-center py-20 border-4 border-border">
+            <div className="text-5xl font-black text-text-muted mb-4">0</div>
+            <p className="text-sm text-text-muted font-medium mb-4">No competitions yet</p>
+            {user && <Link href="/create-competition" className="inline-flex items-center gap-2 px-5 py-2.5 bg-text text-text-inverse font-bold uppercase text-xs border-2 border-border"><Plus size={14} /> Create One</Link>}
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {competitions.map((competition) => (
-              <Link
-                key={competition.id}
-                href={user ? `/competitions/${competition.id}` : "/login"}
-                className="group bg-surface-raised rounded-2xl border border-border hover:border-secondary/40 hover:shadow-md transition-all active:scale-[0.99]"
-              >
-                <div className="p-5">
-                  <div className="flex justify-between items-start gap-3 mb-3">
-                    <h3 className="text-base font-semibold text-text group-hover:text-secondary transition-colors leading-snug">
-                      {competition.name}
-                    </h3>
-                    <span
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium border whitespace-nowrap ${getStatusStyle(
-                        competition.status
-                      )}`}
-                    >
-                      {competition.status}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 text-sm text-text-muted mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={14} className="shrink-0" />
-                      <span>
-                        {formatDate(competition.start_date)} &ndash;{" "}
-                        {formatDate(competition.end_date)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Zap size={14} className="shrink-0" />
-                      <span>{competition.points_per_minute} pts/min</span>
-                    </div>
-                    {competition.participants && (
-                      <div className="flex items-center gap-2">
-                        <Users size={14} className="shrink-0" />
-                        <span>{competition.participants.length} participants</span>
-                      </div>
-                    )}
-                  </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-0 border-4 border-border">
+            {competitions.map((c, i) => (
+              <Link key={c.id} href={user ? `/competitions/${c.id}` : "/login"}
+                className={`group p-5 border-b-2 border-r-2 border-border hover:bg-surface-sunken transition-all ${i % 3 === 2 ? 'border-r-0 lg:border-r-2' : ''}`}>
+                <div className="flex justify-between items-start gap-2 mb-3">
+                  <h3 className="text-base font-black uppercase tracking-tight text-text group-hover:text-primary transition-colors">{c.name}</h3>
+                  <span className={`px-2 py-0.5 text-[10px] font-bold uppercase ${statusStyle(c.status)}`}>{c.status}</span>
                 </div>
-
-                <div className="px-5 py-3 border-t border-border">
+                <div className="space-y-1.5 text-xs text-text-muted font-medium mb-4">
+                  <div className="flex items-center gap-2"><Calendar size={12} />{formatDate(c.start_date)} — {formatDate(c.end_date)}</div>
+                  <div className="flex items-center gap-2"><Zap size={12} />{c.points_per_minute} pts/min</div>
+                  {c.participants && <div className="flex items-center gap-2"><Users size={12} />{c.participants.length} participants</div>}
+                </div>
+                <div className="pt-3 border-t-2 border-border">
                   {!user ? (
-                    <span className="text-xs font-medium text-secondary">
-                      Sign in to join
-                    </span>
-                  ) : isUserParticipant(competition) ? (
-                    <div className="text-xs font-medium text-success flex items-center gap-1.5">
-                      <Check size={12} />
-                      Joined
-                    </div>
+                    <span className="text-xs font-bold text-primary uppercase">Sign in to join</span>
+                  ) : isJoined(c) ? (
+                    <div className="text-xs font-bold text-success flex items-center gap-1"><Check size={12} /> Joined</div>
                   ) : (
-                    <button
-                      onClick={(e) => handleJoinCompetition(competition.id, e)}
-                      disabled={joiningId === competition.id}
-                      className="text-xs font-medium text-secondary hover:text-secondary/80 disabled:opacity-40 transition-colors"
-                    >
-                      {joiningId === competition.id
-                        ? "Joining..."
-                        : "Join Competition"}
+                    <button onClick={(e) => handleJoin(c.id, e)} disabled={joiningId === c.id}
+                      className="text-xs font-bold text-primary uppercase hover:underline disabled:opacity-40">
+                      {joiningId === c.id ? "Joining..." : "Join →"}
                     </button>
                   )}
                 </div>

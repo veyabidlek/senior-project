@@ -10,36 +10,10 @@ import ReadingGoal from "@/components/ReadingGoal";
 import Badges from "@/components/Badges";
 import ReadingInsights from "@/components/ReadingInsights";
 import { api } from "@/lib/api";
-import {
-  BookOpen,
-  Clock,
-  Flame,
-  Trophy,
-  Calendar,
-  ArrowRight,
-} from "lucide-react";
+import { Clock, Flame, Trophy, BookOpen, Calendar, ArrowRight } from "lucide-react";
 
-interface Competition {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string;
-  points_per_minute: number;
-  status: string;
-  participants?: Array<{
-    user: { id: string; display_name: string };
-    points: number;
-    days_read: number;
-    minutes_total: number;
-  }>;
-}
-
-interface ReadingEntry {
-  id: string;
-  minutes: number;
-  source: string;
-  timestamp: string;
-}
+interface Competition { id: string; name: string; start_date: string; end_date: string; points_per_minute: number; status: string; }
+interface ReadingEntry { id: string; minutes: number; source: string; timestamp: string; }
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -49,10 +23,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+    if (!user) { router.push("/login"); return; }
     loadData();
   }, [user, router]);
 
@@ -65,9 +36,7 @@ export default function DashboardPage() {
       ]);
       setMyCompetitions(Array.isArray(comps) ? comps : []);
       setReadings(Array.isArray(readingData) ? readingData : []);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   if (!user) return null;
@@ -77,165 +46,82 @@ export default function DashboardPage() {
   const hours = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
   const activeComps = myCompetitions.filter((c) => c.status === "active" || c.status === "open");
-
-  // Calculate today's minutes from readings
   const today = new Date().toISOString().slice(0, 10);
-  const todayMinutes = readings
-    .filter((r) => r.timestamp.slice(0, 10) === today)
-    .reduce((sum, r) => sum + r.minutes, 0);
+  const todayMinutes = readings.filter((r) => r.timestamp.slice(0, 10) === today).reduce((s, r) => s + r.minutes, 0);
 
   return (
     <div className="min-h-screen">
       <Navbar />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 animate-fade-in">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-text tracking-tight">
-            Welcome back, {user.display_name}
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-14 animate-fade-in">
+        <div className="mb-8 border-b-4 border-border pb-6">
+          <h1 className="text-3xl font-black uppercase tracking-tighter text-text">
+            {user.display_name}
           </h1>
-          <p className="text-sm text-text-muted mt-1">
-            Here&apos;s your reading overview
-          </p>
+          <p className="text-sm text-text-muted font-medium mt-1">Your reading overview</p>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <div className="bg-surface-raised rounded-2xl p-5 border border-border">
-            <div className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center mb-3">
-              <Clock size={16} className="text-secondary" />
+        {/* Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 border-4 border-border mb-6">
+          {[
+            { icon: <Clock size={18} />, value: hours > 0 ? `${hours}h ${mins}m` : `${mins}m`, label: "Total Reading" },
+            { icon: <Flame size={18} />, value: `${streak}d`, label: "Streak" },
+            { icon: <Trophy size={18} />, value: activeComps.length, label: "Active" },
+            { icon: <BookOpen size={18} />, value: readings.length, label: "Sessions" },
+          ].map((stat, i) => (
+            <div key={i} className={`p-5 text-center ${i < 3 ? "border-r-2 border-border" : ""} ${i < 2 ? "border-b-2 sm:border-b-0 border-border" : ""}`}>
+              <div className="text-text-muted mb-2">{stat.icon}</div>
+              <div className="text-2xl font-black text-text font-mono">{stat.value}</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-text-muted mt-1">{stat.label}</div>
             </div>
-            <div className="text-2xl font-bold text-text tracking-tight">
-              {hours > 0 ? `${hours}h ${mins}m` : `${mins}m`}
-            </div>
-            <div className="text-xs text-text-muted mt-1">Total Reading</div>
-          </div>
-
-          <div className="bg-surface-raised rounded-2xl p-5 border border-border">
-            <div className="w-8 h-8 bg-warning/10 rounded-lg flex items-center justify-center mb-3">
-              <Flame size={16} className="text-warning" />
-            </div>
-            <div className="text-2xl font-bold text-text tracking-tight">
-              {streak} {streak === 1 ? "day" : "days"}
-            </div>
-            <div className="text-xs text-text-muted mt-1">Current Streak</div>
-          </div>
-
-          <div className="bg-surface-raised rounded-2xl p-5 border border-border">
-            <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center mb-3">
-              <Trophy size={16} className="text-success" />
-            </div>
-            <div className="text-2xl font-bold text-text tracking-tight">
-              {activeComps.length}
-            </div>
-            <div className="text-xs text-text-muted mt-1">Active Competitions</div>
-          </div>
-
-          <div className="bg-surface-raised rounded-2xl p-5 border border-border">
-            <div className="w-8 h-8 bg-primary/30 rounded-lg flex items-center justify-center mb-3">
-              <BookOpen size={16} className="text-text" />
-            </div>
-            <div className="text-2xl font-bold text-text tracking-tight">
-              {readings.length}
-            </div>
-            <div className="text-xs text-text-muted mt-1">Reading Sessions</div>
-          </div>
+          ))}
         </div>
 
-        {/* Bento grid: Goal + Calendar + Badges */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-6">
+        {/* Goal + Calendar */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <ReadingGoal todayMinutes={todayMinutes} />
-          <div className="lg:col-span-2">
-            <StreakCalendar readings={readings} />
-          </div>
+          <div className="lg:col-span-2"><StreakCalendar readings={readings} /></div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+        {/* Insights + Badges */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           <ReadingInsights readings={readings} totalMinutes={totalMinutes} />
-          <Badges
-            totalMinutes={totalMinutes}
-            streak={streak}
-            competitionsJoined={myCompetitions.length}
-          />
+          <Badges totalMinutes={totalMinutes} streak={streak} competitionsJoined={myCompetitions.length} />
+        </div>
 
-          {/* My Competitions */}
-          <div className="bg-surface-raised rounded-2xl border border-border overflow-hidden">
-            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-text">
-                My Competitions
-              </h3>
-              <Link
-                href="/competitions"
-                className="text-xs font-medium text-secondary hover:text-secondary/80 flex items-center gap-1"
-              >
-                View all
-                <ArrowRight size={12} />
-              </Link>
+        {/* Competitions */}
+        <div className="border-4 border-border">
+          <div className="px-5 py-4 border-b-4 border-border flex items-center justify-between bg-surface-sunken">
+            <h3 className="text-sm font-black uppercase tracking-wider text-text">My Competitions</h3>
+            <Link href="/competitions" className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1 hover:underline">
+              All <ArrowRight size={10} />
+            </Link>
+          </div>
+          {loading ? (
+            <div className="py-8 text-center text-sm font-bold uppercase animate-pulse">Loading...</div>
+          ) : myCompetitions.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="text-sm text-text-muted mb-2">No competitions yet</p>
+              <Link href="/competitions" className="text-xs font-bold text-primary uppercase hover:underline">Browse</Link>
             </div>
-
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <div className="w-5 h-5 border-2 border-secondary border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : myCompetitions.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-sm text-text-muted mb-2">
-                  No competitions yet
-                </p>
-                <Link
-                  href="/competitions"
-                  className="text-xs font-medium text-secondary hover:underline"
-                >
-                  Browse competitions
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-border">
-                {myCompetitions.slice(0, 4).map((comp) => (
-                  <Link
-                    key={comp.id}
-                    href={`/competitions/${comp.id}`}
-                    className="flex items-center justify-between px-5 py-3 hover:bg-surface-sunken transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-2 h-2 rounded-full shrink-0 ${
-                          comp.status === "active" || comp.status === "open"
-                            ? "bg-success"
-                            : comp.status === "upcoming"
-                            ? "bg-secondary"
-                            : "bg-text-muted"
-                        }`}
-                      />
-                      <div>
-                        <div className="text-sm font-medium text-text">
-                          {comp.name}
-                        </div>
-                        <div className="text-xs text-text-muted flex items-center gap-1 mt-0.5">
-                          <Calendar size={10} />
-                          {new Date(comp.end_date).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </div>
+          ) : (
+            <div>
+              {myCompetitions.slice(0, 5).map((comp) => (
+                <Link key={comp.id} href={`/competitions/${comp.id}`}
+                  className="flex items-center justify-between px-5 py-3 border-b-2 border-border hover:bg-surface-sunken transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 border-2 border-border ${comp.status === "active" || comp.status === "open" ? "bg-success" : "bg-surface-sunken"}`} />
+                    <div>
+                      <div className="text-sm font-bold text-text uppercase">{comp.name}</div>
+                      <div className="text-xs text-text-muted font-mono flex items-center gap-1 mt-0.5">
+                        <Calendar size={10} />{new Date(comp.end_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </div>
                     </div>
-                    <span
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-medium ${
-                        comp.status === "active" || comp.status === "open"
-                          ? "bg-success/10 text-success"
-                          : comp.status === "upcoming"
-                          ? "bg-secondary/10 text-secondary"
-                          : "bg-surface-sunken text-text-muted"
-                      }`}
-                    >
-                      {comp.status}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+                  </div>
+                  <span className={`px-2 py-0.5 text-[10px] font-bold uppercase ${comp.status === "active" || comp.status === "open" ? "bg-success text-text-inverse" : "bg-surface-sunken text-text-muted"}`}>{comp.status}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

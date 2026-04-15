@@ -1,23 +1,16 @@
 import Link from "next/link";
-import { BookOpen, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
-      <div className="text-center max-w-md">
-        <div className="w-16 h-16 bg-primary/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <BookOpen size={28} className="text-text" />
-        </div>
-        <h1 className="text-6xl font-bold text-text tracking-tight mb-2">404</h1>
-        <p className="text-lg text-text-muted mb-8">
-          This page got lost between chapters.
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center">
+        <div className="text-[120px] font-black leading-none text-text tracking-tighter">404</div>
+        <p className="text-lg font-bold uppercase tracking-wider text-text-muted mt-4 mb-8">
+          Page not found
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-text text-text-inverse rounded-xl hover:opacity-90 transition-colors font-medium text-sm"
-        >
-          <ArrowLeft size={16} />
-          Back to home
+        <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-text text-text-inverse font-black uppercase tracking-wider text-sm border-2 border-border hover:bg-primary transition-all">
+          <ArrowLeft size={16} /> Go Back
         </Link>
       </div>
     </div>

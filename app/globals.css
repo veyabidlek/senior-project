@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  /* Bento Design System Tokens — Light */
-  --color-primary: #FAD4C0;
-  --color-secondary: #80A1C1;
+  /* Brutalism Design System Tokens */
+  --color-primary: #DD614C;
+  --color-secondary: #DAA144;
   --color-success: #16A34A;
   --color-warning: #D97706;
   --color-danger: #DC2626;
-  --color-surface: #FFF5E6;
+  --color-surface: #FFFFFF;
   --color-surface-raised: #FFFFFF;
-  --color-surface-sunken: #FFF0D9;
-  --color-surface-overlay: #1A1A1A;
+  --color-surface-sunken: #F5F5F0;
+  --color-surface-overlay: #111827;
   --color-text: #111827;
   --color-text-muted: #6B7280;
   --color-text-inverse: #FFFFFF;
-  --color-border: #E5E0D8;
-  --color-border-focus: #80A1C1;
+  --color-border: #111827;
+  --color-border-focus: #DD614C;
 
   /* Font families */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "Darker Grotesque", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -26,87 +26,59 @@ body {
   background-color: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-sans);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* Dark mode overrides */
+/* Dark mode */
 html[data-theme="dark"] {
-  --color-primary: #8B6F5E;
-  --color-secondary: #6B8FAF;
-  --color-surface: #0F1117;
-  --color-surface-raised: #1A1D27;
-  --color-surface-sunken: #141620;
+  --color-primary: #DD614C;
+  --color-secondary: #DAA144;
+  --color-surface: #0A0A0A;
+  --color-surface-raised: #141414;
+  --color-surface-sunken: #0F0F0F;
   --color-surface-overlay: #F5F5F5;
-  --color-text: #E5E7EB;
+  --color-text: #F5F5F0;
   --color-text-muted: #9CA3AF;
-  --color-text-inverse: #111827;
-  --color-border: #2A2D3A;
-  --color-border-focus: #6B8FAF;
+  --color-text-inverse: #0A0A0A;
+  --color-border: #F5F5F0;
+  --color-border-focus: #DD614C;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+/* Brutalism: no rounded corners globally, thick borders */
+* {
+  border-radius: 0 !important;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* Scrollbar — raw */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-text); }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
-}
-
-/* Focus visible styles */
+/* Focus */
 *:focus-visible {
-  outline: 2px solid var(--color-border-focus);
+  outline: 3px solid var(--color-border-focus);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* Animations */
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes confettiBurst {
-  0% { transform: scale(0); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 0; }
-}
+.animate-fade-in { animation: fadeIn 0.2s ease-out; }
+.animate-scale-in { animation: scaleIn 0.15s ease-out; }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.2s ease-out;
+/* Brutalist selection */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
 }

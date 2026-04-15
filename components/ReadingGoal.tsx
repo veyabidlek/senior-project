@@ -33,9 +33,9 @@ export default function ReadingGoal({ todayMinutes }: ReadingGoalProps) {
   const completed = todayMinutes >= goal;
 
   return (
-    <div className="bg-surface-raised rounded-2xl p-5 border border-border">
+    <div className="bg-surface-raised p-5 border-4 border-border">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-text">Daily Goal</h3>
+        <h3 className="text-xs font-black uppercase tracking-wider text-text">Daily Goal</h3>
         {!editing && (
           <button
             onClick={() => setEditing(true)}

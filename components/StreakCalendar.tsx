@@ -51,8 +51,8 @@ export default function StreakCalendar({ readings }: StreakCalendarProps) {
   const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
 
   return (
-    <div className="bg-surface-raised rounded-2xl p-5 border border-border">
-      <h3 className="text-sm font-semibold text-text mb-4">Reading Activity</h3>
+    <div className="bg-surface-raised p-5 border-4 border-border">
+      <h3 className="text-xs font-black uppercase tracking-wider text-text mb-4">Reading Activity</h3>
       <div className="flex gap-1 overflow-x-auto">
         {/* Day labels */}
         <div className="flex flex-col gap-1 mr-1 shrink-0">
@@ -68,7 +68,7 @@ export default function StreakCalendar({ readings }: StreakCalendarProps) {
             {week.map((day) => (
               <div
                 key={day.date}
-                className={`w-3 h-3 rounded-sm ${getIntensity(day.minutes)} transition-colors`}
+                className={`w-3 h-3 border border-border/30 ${getIntensity(day.minutes)} transition-colors`}
                 title={`${day.date}: ${day.minutes} min`}
               />
             ))}
@@ -78,11 +78,11 @@ export default function StreakCalendar({ readings }: StreakCalendarProps) {
       <div className="flex items-center gap-2 mt-3 text-[10px] text-text-muted">
         <span>Less</span>
         <div className="flex gap-0.5">
-          <div className="w-3 h-3 rounded-sm bg-border/40" />
-          <div className="w-3 h-3 rounded-sm bg-success/20" />
-          <div className="w-3 h-3 rounded-sm bg-success/40" />
-          <div className="w-3 h-3 rounded-sm bg-success/60" />
-          <div className="w-3 h-3 rounded-sm bg-success/80" />
+          <div className="w-3 h-3 bg-border/40" />
+          <div className="w-3 h-3 bg-success/20" />
+          <div className="w-3 h-3 bg-success/40" />
+          <div className="w-3 h-3 bg-success/60" />
+          <div className="w-3 h-3 bg-success/80" />
         </div>
         <span>More</span>
       </div>

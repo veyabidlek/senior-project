@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Darker_Grotesque, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/components/Toast";
 import { QueryProvider } from "@/lib/query-provider";
 
-const inter = Inter({
-  variable: "--font-inter",
+const darkerGrotesque = Darker_Grotesque({
+  variable: "--font-darker",
   subsets: ["latin"],
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -19,8 +20,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PowerBook - Reading Competitions",
-  description: "Join reading competitions and compete with fellow book lovers",
+  title: "PowerBook — Competitive Reading",
+  description: "Build reading habits through competition",
 };
 
 export default function RootLayout({
@@ -30,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans`}>
+      <body className={`${darkerGrotesque.variable} ${jetbrainsMono.variable} antialiased font-sans`}>
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>

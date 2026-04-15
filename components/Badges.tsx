@@ -59,9 +59,9 @@ export default function Badges({ totalMinutes, streak, competitionsJoined }: Bad
   const unlockedCount = badges.filter((b) => b.unlocked).length;
 
   return (
-    <div className="bg-surface-raised rounded-2xl p-5 border border-border">
+    <div className="bg-surface-raised p-5 border-4 border-border">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-text">Badges</h3>
+        <h3 className="text-xs font-black uppercase tracking-wider text-text">Badges</h3>
         <span className="text-xs text-text-muted">
           {unlockedCount}/{badges.length} unlocked
         </span>

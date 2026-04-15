@@ -66,12 +66,12 @@ export default function ReadingInsights({ readings, totalMinutes }: ReadingInsig
   ).length;
 
   return (
-    <div className="bg-surface-raised rounded-2xl p-5 border border-border">
-      <h3 className="text-sm font-semibold text-text mb-4">Reading Insights</h3>
+    <div className="bg-surface-raised p-5 border-4 border-border">
+      <h3 className="text-xs font-black uppercase tracking-wider text-text mb-4">Reading Insights</h3>
 
       <div className="grid grid-cols-2 gap-3">
         {/* This week */}
-        <div className="bg-surface-sunken rounded-xl p-3">
+        <div className="bg-surface-sunken border-2 border-border p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <Clock size={12} className="text-text-muted" />
             <span className="text-[10px] text-text-muted uppercase tracking-wider">This week</span>
@@ -97,7 +97,7 @@ export default function ReadingInsights({ readings, totalMinutes }: ReadingInsig
         </div>
 
         {/* Avg session */}
-        <div className="bg-surface-sunken rounded-xl p-3">
+        <div className="bg-surface-sunken border-2 border-border p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <Zap size={12} className="text-text-muted" />
             <span className="text-[10px] text-text-muted uppercase tracking-wider">Avg session</span>
@@ -109,7 +109,7 @@ export default function ReadingInsights({ readings, totalMinutes }: ReadingInsig
         </div>
 
         {/* Best day */}
-        <div className="bg-surface-sunken rounded-xl p-3">
+        <div className="bg-surface-sunken border-2 border-border p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <Calendar size={12} className="text-text-muted" />
             <span className="text-[10px] text-text-muted uppercase tracking-wider">Best day</span>
@@ -121,7 +121,7 @@ export default function ReadingInsights({ readings, totalMinutes }: ReadingInsig
         </div>
 
         {/* This month */}
-        <div className="bg-surface-sunken rounded-xl p-3">
+        <div className="bg-surface-sunken border-2 border-border p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <Calendar size={12} className="text-text-muted" />
             <span className="text-[10px] text-text-muted uppercase tracking-wider">This month</span>
