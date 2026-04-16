@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import Confetti from "@/components/Confetti";
-import { Trophy, Medal, ArrowLeft, Calendar, Zap, Share2 } from "lucide-react";
+import { Trophy, ArrowLeft, Calendar, Zap, Share2, LogIn } from "lucide-react";
 import Link from "next/link";
 
 interface LeaderboardEntry { user_id: string; display_name: string; points: number; rank: number; }
@@ -16,7 +16,6 @@ interface MyRank { rank: number; points: number; total_participants: number; }
 
 export default function CompetitionDetailPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
   const competitionId = params.id as string;
@@ -28,18 +27,18 @@ export default function CompetitionDetailPage() {
   const [joining, setJoining] = useState(false);
 
   useEffect(() => {
-    if (!user) { router.push("/login"); return; }
     loadData();
-  }, [user, router, competitionId]);
+  }, [user, competitionId]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [lb, rank, comp] = await Promise.all([
+      const promises: [Promise<LeaderboardEntry[]>, Promise<MyRank | null>, Promise<typeof competition>] = [
         api.getLeaderboard(competitionId, 50),
-        api.getMyRank(competitionId).catch(() => null),
+        user ? api.getMyRank(competitionId).catch(() => null) : Promise.resolve(null),
         api.getCompetition(competitionId).catch(() => null),
-      ]);
+      ];
+      const [lb, rank, comp] = await Promise.all(promises);
       setLeaderboard(Array.isArray(lb) ? lb : []);
       setMyRank(rank);
       setCompetition(comp);
@@ -53,8 +52,6 @@ export default function CompetitionDetailPage() {
     catch { toast("Failed to join", "error"); }
     finally { setJoining(false); }
   };
-
-  if (!user) return null;
 
   const getRank = (rank: number) => {
     if (rank === 1) return <span className="text-secondary font-black">1ST</span>;
@@ -95,8 +92,8 @@ export default function CompetitionDetailPage() {
           <div className="mb-6"><CountdownTimer endDate={competition.end_date} startDate={competition.start_date} status={competition.status} /></div>
         )}
 
-        {/* Stats */}
-        {!loading && myRank && (
+        {/* Stats - only for logged-in joined users */}
+        {!loading && user && myRank && (
           <div className="grid grid-cols-3 gap-0 border-4 border-border mb-6">
             <div className="p-4 sm:p-5 text-center border-r-2 border-border">
               <div className="text-2xl font-black text-text">#{myRank.rank}</div>
@@ -113,7 +110,19 @@ export default function CompetitionDetailPage() {
           </div>
         )}
 
-        {!myRank && !loading && (
+        {/* Join CTA - different for logged-in vs logged-out */}
+        {!loading && !user && (
+          <div className="border-4 border-primary p-6 mb-6 text-center">
+            <h2 className="text-base font-black uppercase text-text mb-1">Want to Compete?</h2>
+            <p className="text-xs text-text-muted mb-4">Sign in to join this competition</p>
+            <Link href="/login"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-text-inverse font-black uppercase tracking-wider text-sm border-2 border-border hover:bg-secondary transition-all">
+              <LogIn size={14} /> Sign In to Join
+            </Link>
+          </div>
+        )}
+
+        {user && !myRank && !loading && (
           <div className="border-4 border-secondary p-6 mb-6 text-center">
             <h2 className="text-base font-black uppercase text-text mb-1">Join This Competition</h2>
             <p className="text-xs text-text-muted mb-4">You haven&apos;t joined yet</p>
@@ -143,17 +152,19 @@ export default function CompetitionDetailPage() {
               {leaderboard.map((entry) => (
                 <div key={entry.user_id}
                   className={`flex items-center justify-between px-5 py-3 border-b-2 border-border transition-colors ${
-                    entry.user_id === user.id ? "bg-primary/10 border-l-4 border-l-primary" : "hover:bg-surface-sunken"
+                    user && entry.user_id === user.id ? "bg-primary/10 border-l-4 border-l-primary" : "hover:bg-surface-sunken"
                   }`}>
                   <div className="flex items-center gap-4">
                     <div className="w-8 text-center text-sm">{getRank(entry.rank)}</div>
-                    <div className="w-8 h-8 bg-surface-sunken border-2 border-border flex items-center justify-center text-xs font-black text-text">
-                      {(entry.display_name || "?")[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <span className="text-sm font-bold text-text">{entry.display_name}</span>
-                      {entry.user_id === user.id && <span className="ml-2 text-xs font-bold text-primary uppercase">You</span>}
-                    </div>
+                    <Link href={`/users/${entry.user_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                      <div className="w-8 h-8 bg-surface-sunken border-2 border-border flex items-center justify-center text-xs font-black text-text">
+                        {(entry.display_name || "?")[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="text-sm font-bold text-text hover:text-primary transition-colors">{entry.display_name}</span>
+                        {user && entry.user_id === user.id && <span className="ml-2 text-xs font-bold text-primary uppercase">You</span>}
+                      </div>
+                    </Link>
                   </div>
                   <div className="text-sm font-black text-text font-mono">{entry.points.toLocaleString()}</div>
                 </div>

@@ -146,6 +146,12 @@ class ApiClient {
     ) || null;
   }
 
+  // Public user profile
+  async getUserProfile(id: string) {
+    const response = await this.client.get(`/users/${id}`);
+    return response.data?.data || response.data;
+  }
+
   // Reading history
   async getReadingHistory() {
     const response = await this.client.get("/reading/history");

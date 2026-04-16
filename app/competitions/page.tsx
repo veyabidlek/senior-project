@@ -98,7 +98,7 @@ export default function CompetitionsPage() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-0 border-4 border-border">
             {competitions.map((c, i) => (
-              <Link key={c.id} href={user ? `/competitions/${c.id}` : "/login"}
+              <Link key={c.id} href={`/competitions/${c.id}`}
                 className={`group p-5 border-b-2 border-r-2 border-border hover:bg-surface-sunken transition-all ${i % 3 === 2 ? 'border-r-0 lg:border-r-2' : ''}`}>
                 <div className="flex justify-between items-start gap-2 mb-3">
                   <h3 className="text-base font-black uppercase tracking-tight text-text group-hover:text-primary transition-colors">{c.name}</h3>
