@@ -69,3 +69,18 @@ export const LEVELS = [
   { name: "Legend", xp: 4000 },
   { name: "Book King", xp: 5500 },
 ];
+
+// Generate consistent avatar color from a string
+const AVATAR_COLORS = [
+  "bg-[#DD614C]", "bg-[#DAA144]", "bg-[#16A34A]", "bg-[#2563EB]",
+  "bg-[#7C3AED]", "bg-[#DC2626]", "bg-[#0891B2]", "bg-[#CA8A04]",
+  "bg-[#059669]", "bg-[#4F46E5]", "bg-[#BE185D]", "bg-[#EA580C]",
+];
+
+export function avatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
