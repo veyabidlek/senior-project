@@ -152,6 +152,26 @@ class ApiClient {
     return response.data?.data || response.data;
   }
 
+  // Update profile (telegram handle)
+  async updateProfile(data: { telegram_handle: string }) {
+    const response = await this.client.put("/users/me/profile", data);
+    return response.data?.data || response.data;
+  }
+
+  // Gift exchanges
+  async getGiftExchanges(competitionId: string) {
+    const response = await this.client.get(`/competitions/${competitionId}/gifts`);
+    const data = response.data?.data || response.data;
+    return data?.gifts || [];
+  }
+
+  async confirmGift(giftId: string, giftDescription?: string) {
+    const response = await this.client.post(`/gifts/${giftId}/confirm`, {
+      gift_description: giftDescription || "",
+    });
+    return response.data?.data || response.data;
+  }
+
   // Reading history
   async getReadingHistory() {
     const response = await this.client.get("/reading/history");
