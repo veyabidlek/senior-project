@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import Confetti from "@/components/Confetti";
-import { Trophy, ArrowLeft, Calendar, Zap, Share2, LogIn, Gift, ArrowRight, Check, X } from "lucide-react";
+import { Trophy, ArrowLeft, Calendar, Zap, Share2, LogIn, Gift, ArrowRight, Check, X, ChevronLeft, ChevronRight, User } from "lucide-react";
 import Link from "next/link";
 import type { GiftExchange } from "@/lib/types";
 
@@ -28,6 +28,9 @@ export default function CompetitionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [activeTab, setActiveTab] = useState<"gifts" | "standings">("gifts");
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 25;
+  const myRowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadData();
@@ -37,7 +40,7 @@ export default function CompetitionDetailPage() {
     try {
       setLoading(true);
       const [lb, rank, comp, giftList] = await Promise.all([
-        api.getLeaderboard(competitionId, 50).catch(() => []),
+        api.getLeaderboard(competitionId, 500).catch(() => []),
         user ? api.getMyRank(competitionId).catch(() => null) : Promise.resolve(null),
         api.getCompetition(competitionId).catch(() => null),
         api.getGiftExchanges(competitionId).catch(() => []),
@@ -95,6 +98,22 @@ export default function CompetitionDetailPage() {
   };
 
   const isClosed = competition?.status === "closed";
+
+  // Pagination
+  const totalPages = Math.ceil(leaderboard.length / PER_PAGE);
+  const paginatedLeaderboard = leaderboard.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  // Find user's position
+  const myEntry = useMemo(() => user ? leaderboard.find(e => e.user_id === user.id) : null, [leaderboard, user]);
+  const myPage = myEntry ? Math.ceil(myEntry.rank / PER_PAGE) : null;
+  const isInTopHalf = myEntry ? myEntry.rank <= Math.floor(leaderboard.length / 2) : false;
+
+  const findMe = () => {
+    if (myPage) {
+      setPage(myPage);
+      setTimeout(() => myRowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -270,6 +289,33 @@ export default function CompetitionDetailPage() {
               </div>
             )}
 
+            {/* Motivational banner + Find Me */}
+            {user && myEntry && !loading && !isClosed && (
+              <div className={`px-5 py-3 border-b-2 border-border flex items-center justify-between ${isInTopHalf ? "bg-success/10" : "bg-secondary/10"}`}>
+                <div>
+                  <span className="text-xs font-black uppercase text-text">
+                    {isInTopHalf ? "\u2705 You're in the top 50%!" : "\u26a0\ufe0f You're in the bottom 50%"}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-2">
+                    {isInTopHalf ? "Keep it up! Stay ahead to be a gift giver." : "Read more to climb up and avoid receiving gifts!"}
+                  </span>
+                </div>
+                <button onClick={findMe} className="px-3 py-1.5 bg-primary text-text-inverse text-[10px] font-black uppercase border-2 border-border hover:bg-secondary transition-all flex items-center gap-1 shrink-0">
+                  <User size={10} /> Find Me
+                </button>
+              </div>
+            )}
+
+            {/* Find Me button for any leaderboard with user */}
+            {user && myEntry && !loading && isClosed && (
+              <div className="px-5 py-2 border-b-2 border-border flex items-center justify-between">
+                <span className="text-xs font-bold text-text">Your rank: #{myEntry.rank} of {leaderboard.length}</span>
+                <button onClick={findMe} className="px-3 py-1.5 bg-primary text-text-inverse text-[10px] font-black uppercase border-2 border-border hover:bg-secondary transition-all flex items-center gap-1">
+                  <User size={10} /> Find Me
+                </button>
+              </div>
+            )}
+
             {/* Group legend for closed competitions */}
             {isClosed && leaderboard.length > 0 && (
               <div className="px-5 py-2 border-b-2 border-border flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-wider">
@@ -299,7 +345,7 @@ export default function CompetitionDetailPage() {
               </div>
             ) : (
               <div>
-                {leaderboard.map((entry) => {
+                {paginatedLeaderboard.map((entry) => {
                   const total = leaderboard.length;
                   const half = Math.floor(total / 2);
                   const isNeutral = isClosed && total % 2 !== 0 && entry.rank === half + 1;
@@ -311,6 +357,7 @@ export default function CompetitionDetailPage() {
 
                   return (
                   <div key={entry.user_id}
+                    ref={user && entry.user_id === user.id ? myRowRef : undefined}
                     className={`flex items-center justify-between px-5 py-3 border-b-2 border-border transition-colors ${
                       user && entry.user_id === user.id ? "bg-primary/10 border-l-4 border-l-primary" : isClosed ? groupBg : "hover:bg-surface-sunken"
                     }`}>
@@ -340,6 +387,34 @@ export default function CompetitionDetailPage() {
                   </div>
                   );
                 })}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between px-5 py-3 bg-surface-sunken border-t-2 border-border">
+                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold uppercase border-2 border-border hover:bg-surface-raised transition-all disabled:opacity-30">
+                      <ChevronLeft size={12} /> Prev
+                    </button>
+                    <div className="flex items-center gap-1 flex-wrap justify-center">
+                      {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
+                        const p = totalPages <= 10 ? i + 1 : (page <= 5 ? i + 1 : Math.max(1, page - 4) + i);
+                        if (p > totalPages) return null;
+                        return (
+                          <button key={p} onClick={() => setPage(p)}
+                            className={`w-7 h-7 text-xs font-bold border-2 transition-all ${
+                              p === page ? "bg-primary text-text-inverse border-primary" : "border-border hover:bg-surface-raised"
+                            }`}>
+                            {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold uppercase border-2 border-border hover:bg-surface-raised transition-all disabled:opacity-30">
+                      Next <ChevronRight size={12} />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
