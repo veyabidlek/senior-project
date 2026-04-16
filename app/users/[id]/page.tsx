@@ -1,46 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { api } from "@/lib/api";
-import { useToast } from "@/components/Toast";
+import { useUserProfile, useCompetitions } from "@/lib/hooks";
 import { Clock, Flame, ArrowLeft, Trophy, Star, Send } from "lucide-react";
 import Link from "next/link";
 import { LEVELS } from "@/lib/types";
-import type { UserProfile, Competition } from "@/lib/types";
+import type { Competition } from "@/lib/types";
 
 export default function UserProfilePage() {
   const params = useParams();
   const userId = params.id as string;
-  const { toast } = useToast();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: profile, isLoading: profileLoading } = useUserProfile(userId);
+  const { data: allComps = [], isLoading: compsLoading } = useCompetitions();
+  const loading = profileLoading || compsLoading;
 
-  useEffect(() => {
-    loadProfile();
-  }, [userId]);
-
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      const [data, allComps] = await Promise.all([
-        api.getUserProfile(userId),
-        api.listCompetitions().catch(() => []),
-      ]);
-      setProfile(data);
-      // Filter competitions where this user participates
-      const userComps = (allComps as Competition[]).filter((c: Competition) =>
-        c.participants?.some((p) => p.user.id === userId)
-      );
-      setCompetitions(userComps);
-    } catch {
-      toast("User not found", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const competitions = useMemo(() =>
+    (allComps as Competition[]).filter((c: Competition) =>
+      c.participants?.some((p) => p.user.id === userId)
+    ), [allComps, userId]);
 
   if (loading) {
     return (

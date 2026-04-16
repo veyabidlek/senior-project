@@ -39,6 +39,24 @@ export function useCompetition(competitionId: string) {
   });
 }
 
+export function useUserProfile(userId: string) {
+  return useQuery({
+    queryKey: ["user-profile", userId],
+    queryFn: () => api.getUserProfile(userId),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 min cache for profiles
+  });
+}
+
+export function useGiftExchanges(competitionId: string) {
+  return useQuery({
+    queryKey: ["gifts", competitionId],
+    queryFn: () => api.getGiftExchanges(competitionId),
+    enabled: !!competitionId,
+    select: (data: unknown) => (Array.isArray(data) ? data : []),
+  });
+}
+
 export function useReadingHistory() {
   return useQuery({
     queryKey: ["reading-history"],
