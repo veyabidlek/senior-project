@@ -138,12 +138,10 @@ class ApiClient {
     return response.data?.data || response.data;
   }
 
-  // Get a single competition by finding it from the list
+  // Get a single competition by ID
   async getCompetition(id: string) {
-    const competitions = await this.listCompetitions();
-    return competitions.find(
-      (c: { id: string }) => c.id === id
-    ) || null;
+    const response = await this.client.get(`/competitions/${id}`);
+    return response.data?.data || response.data;
   }
 
   // Public user profile

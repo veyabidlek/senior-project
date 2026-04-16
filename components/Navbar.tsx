@@ -34,7 +34,6 @@ export default function Navbar() {
                 <>
                   <Link href="/dashboard" className={navLink}>Dashboard</Link>
                   <Link href="/competitions" className={navLink}>Compete</Link>
-                  <Link href="/activity" className={navLink}>Live</Link>
                   <Link href="/books" className={navLink}>Books</Link>
                   <Link href="/faq" className={navLink}>FAQ</Link>
                   <button onClick={() => setShowReadingModal(true)} className="px-3 py-2 text-sm font-bold uppercase tracking-wider bg-primary text-text-inverse border-2 border-border hover:bg-secondary transition-all">
@@ -80,7 +79,6 @@ export default function Navbar() {
                   <div className="px-3 py-2 font-black text-sm border-b-2 border-border mb-2">{user.display_name}</div>
                   <Link href="/dashboard" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Dashboard</Link>
                   <Link href="/competitions" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Competitions</Link>
-                  <Link href="/activity" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Live Activity</Link>
                   <Link href="/books" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Books</Link>
                   <Link href="/faq" onClick={() => setMobileOpen(false)} className={navLinkMobile}>FAQ</Link>
                   <Link href="/profile" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Profile</Link>

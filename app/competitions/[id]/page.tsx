@@ -270,8 +270,28 @@ export default function CompetitionDetailPage() {
               </div>
             )}
 
+            {/* Group legend for closed competitions */}
+            {isClosed && leaderboard.length > 0 && (
+              <div className="px-5 py-2 border-b-2 border-border flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-success/20 border border-success inline-block" /> Top 50% (Givers)</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-surface-sunken border border-text-muted inline-block" /> Neutral</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-secondary/20 border border-secondary inline-block" /> Bottom 50% (Receivers)</span>
+              </div>
+            )}
+
             {loading ? (
-              <div className="text-center py-16 text-lg font-bold uppercase animate-pulse">Loading...</div>
+              <div>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between px-5 py-3 border-b-2 border-border">
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-5 bg-border/20 animate-pulse" />
+                      <div className="w-8 h-8 bg-border/20 animate-pulse" />
+                      <div className="h-4 w-28 bg-border/20 animate-pulse" />
+                    </div>
+                    <div className="h-4 w-16 bg-border/20 animate-pulse" />
+                  </div>
+                ))}
+              </div>
             ) : leaderboard.length === 0 ? (
               <div className="py-16 text-center">
                 <Trophy size={28} className="text-text-muted mx-auto mb-3" />
@@ -279,17 +299,27 @@ export default function CompetitionDetailPage() {
               </div>
             ) : (
               <div>
-                {leaderboard.map((entry) => (
+                {leaderboard.map((entry) => {
+                  const total = leaderboard.length;
+                  const half = Math.floor(total / 2);
+                  const isNeutral = isClosed && total % 2 !== 0 && entry.rank === half + 1;
+                  const isTop = isClosed && entry.rank <= half;
+                  const isBottom = isClosed && entry.rank > half && !isNeutral;
+                  const groupBg = isNeutral ? "bg-surface-sunken/50 border-l-4 border-l-text-muted" :
+                    isTop ? "bg-success/5 border-l-4 border-l-success" :
+                    isBottom ? "bg-secondary/5 border-l-4 border-l-secondary" : "";
+
+                  return (
                   <div key={entry.user_id}
                     className={`flex items-center justify-between px-5 py-3 border-b-2 border-border transition-colors ${
-                      user && entry.user_id === user.id ? "bg-primary/10 border-l-4 border-l-primary" : "hover:bg-surface-sunken"
-                    } ${isClosed && entry.rank <= 3 ? "bg-surface-sunken" : ""}`}>
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 text-center text-sm">
-                        {isClosed ? <span className="text-lg">{getRankIcon(entry.rank)}</span> : getRank(entry.rank)}
+                      user && entry.user_id === user.id ? "bg-primary/10 border-l-4 border-l-primary" : isClosed ? groupBg : "hover:bg-surface-sunken"
+                    }`}>
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className="w-8 sm:w-10 text-center text-sm shrink-0">
+                        {isClosed ? <span className="text-base sm:text-lg">{getRankIcon(entry.rank)}</span> : getRank(entry.rank)}
                       </div>
-                      <Link href={`/users/${entry.user_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <div className={`w-8 h-8 border-2 flex items-center justify-center text-xs font-black text-text ${
+                      <Link href={`/users/${entry.user_id}`} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
+                        <div className={`w-7 h-7 sm:w-8 sm:h-8 border-2 flex items-center justify-center text-xs font-black text-text shrink-0 ${
                           isClosed && entry.rank === 1 ? "bg-secondary/20 border-secondary" :
                           isClosed && entry.rank === 2 ? "bg-surface-sunken border-text-muted" :
                           isClosed && entry.rank === 3 ? "bg-primary/20 border-primary" :
@@ -297,15 +327,19 @@ export default function CompetitionDetailPage() {
                         }`}>
                           {(entry.display_name || "?")[0].toUpperCase()}
                         </div>
-                        <div>
-                          <span className="text-sm font-bold text-text hover:text-primary transition-colors">{entry.display_name}</span>
-                          {user && entry.user_id === user.id && <span className="ml-2 text-xs font-bold text-primary uppercase">You</span>}
+                        <div className="min-w-0">
+                          <span className="text-xs sm:text-sm font-bold text-text hover:text-primary transition-colors truncate block">{entry.display_name}</span>
+                          <div className="flex items-center gap-1">
+                            {user && entry.user_id === user.id && <span className="text-[10px] font-bold text-primary uppercase">You</span>}
+                            {isNeutral && <span className="text-[10px] font-bold text-text-muted uppercase">Neutral</span>}
+                          </div>
                         </div>
                       </Link>
                     </div>
                     <div className="text-sm font-black text-text font-mono">{entry.points.toLocaleString()}</div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { api } from "@/lib/api";
+import { useCompetitions, useJoinCompetition } from "@/lib/hooks";
 import { useToast } from "@/components/Toast";
 import { Plus, Calendar, Zap, Users, Check, LogIn, Trophy, Sparkles } from "lucide-react";
 
@@ -23,32 +23,17 @@ type Filter = "all" | "active" | "completed" | "upcoming";
 export default function CompetitionsPage() {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: competitions = [], isLoading: loading } = useCompetitions();
+  const joinMutation = useJoinCompetition();
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
-
-  useEffect(() => {
-    if (authLoading) return;
-    loadCompetitions();
-  }, [user, authLoading]);
-
-  const loadCompetitions = async () => {
-    try {
-      setLoading(true);
-      const data = await api.listCompetitions();
-      setCompetitions(Array.isArray(data) ? data : []);
-    } catch { setCompetitions([]); }
-    finally { setLoading(false); }
-  };
 
   const handleJoin = async (id: string, e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation();
     try {
       setJoiningId(id);
-      await api.joinCompetition(id);
+      await joinMutation.mutateAsync(id);
       toast("Joined!", "success");
-      await loadCompetitions();
     } catch { toast("Failed to join", "error"); }
     finally { setJoiningId(null); }
   };
@@ -123,8 +108,25 @@ export default function CompetitionsPage() {
           </div>
         )}
 
-        {loading ? (
-          <div className="text-center py-20 text-lg font-bold uppercase animate-pulse">Loading...</div>
+        {(loading || authLoading) ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-0 border-4 border-border">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="p-5 border-b-2 border-r-2 border-border">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="h-5 w-36 bg-border/20 animate-pulse" />
+                  <div className="h-5 w-16 bg-border/20 animate-pulse" />
+                </div>
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 w-48 bg-border/20 animate-pulse" />
+                  <div className="h-3 w-32 bg-border/20 animate-pulse" />
+                  <div className="h-3 w-28 bg-border/20 animate-pulse" />
+                </div>
+                <div className="pt-3 border-t-2 border-border">
+                  <div className="h-3 w-24 bg-border/20 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : filteredCompetitions.length === 0 ? (
           <div className="text-center py-20 border-4 border-border">
             <div className="text-5xl font-black text-text-muted mb-4">0</div>
