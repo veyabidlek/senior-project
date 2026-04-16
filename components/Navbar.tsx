@@ -40,6 +40,7 @@ export default function Navbar() {
                     <BookOpen size={14} className="inline mr-1" />Log
                   </button>
                   <NotificationCenter streak={user.streak_current || 0} totalMinutes={user.total_minutes || 0} competitionsCount={0} />
+                  {user.is_admin && <Link href="/admin" className={navLink + " text-primary"}>Admin</Link>}
                   <div className="w-0.5 h-6 bg-border mx-2" />
                   <Link href="/profile" className="px-2 py-1 border-2 border-border bg-surface font-bold text-sm hover:bg-surface-sunken transition-all">
                     {user.display_name}

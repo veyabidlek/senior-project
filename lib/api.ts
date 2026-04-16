@@ -170,6 +170,18 @@ class ApiClient {
     return response.data?.data || response.data;
   }
 
+  // Admin
+  async adminListUsers() {
+    const response = await this.client.get("/admin/users");
+    const data = response.data?.data || response.data;
+    return data?.users || [];
+  }
+
+  async adminDeleteUser(id: string) {
+    const response = await this.client.delete(`/admin/users/${id}`);
+    return response.data?.data || response.data;
+  }
+
   // Reading history
   async getReadingHistory() {
     const response = await this.client.get("/reading/history");

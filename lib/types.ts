@@ -8,6 +8,7 @@ export interface User {
   level?: number;
   level_name?: string;
   telegram_handle?: string;
+  is_admin?: boolean;
 }
 
 export interface Competition {
