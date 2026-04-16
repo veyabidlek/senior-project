@@ -36,6 +36,7 @@ export default function Navbar() {
                   <Link href="/competitions" className={navLink}>Compete</Link>
                   <Link href="/activity" className={navLink}>Live</Link>
                   <Link href="/books" className={navLink}>Books</Link>
+                  <Link href="/faq" className={navLink}>FAQ</Link>
                   <button onClick={() => setShowReadingModal(true)} className="px-3 py-2 text-sm font-bold uppercase tracking-wider bg-primary text-text-inverse border-2 border-border hover:bg-secondary transition-all">
                     <BookOpen size={14} className="inline mr-1" />Log
                   </button>
@@ -54,6 +55,7 @@ export default function Navbar() {
               ) : (
                 <>
                   <Link href="/competitions" className={navLink}>Browse</Link>
+                  <Link href="/faq" className={navLink}>FAQ</Link>
                   <button onClick={toggleTheme} className="p-2 border-2 border-border hover:bg-surface-sunken transition-all" aria-label="Toggle theme">
                     {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
                   </button>
@@ -80,6 +82,7 @@ export default function Navbar() {
                   <Link href="/competitions" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Competitions</Link>
                   <Link href="/activity" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Live Activity</Link>
                   <Link href="/books" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Books</Link>
+                  <Link href="/faq" onClick={() => setMobileOpen(false)} className={navLinkMobile}>FAQ</Link>
                   <Link href="/profile" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Profile</Link>
                   <button onClick={() => { setShowReadingModal(true); setMobileOpen(false); }} className={navLinkMobile + " text-primary"}>Log Reading</button>
                   <button onClick={() => { logout(); setMobileOpen(false); }} className={navLinkMobile + " text-danger"}>Logout</button>
@@ -87,6 +90,7 @@ export default function Navbar() {
               ) : (
                 <>
                   <Link href="/competitions" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Browse</Link>
+                  <Link href="/faq" onClick={() => setMobileOpen(false)} className={navLinkMobile}>FAQ</Link>
                   <Link href="/login" onClick={() => setMobileOpen(false)} className={navLinkMobile}>Sign In</Link>
                   <Link href="/register" onClick={() => setMobileOpen(false)} className={navLinkMobile + " bg-text text-text-inverse"}>Join</Link>
                 </>
