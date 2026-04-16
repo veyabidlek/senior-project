@@ -116,7 +116,7 @@ export default function AdminPage() {
           ) : (
             filtered.map((u) => (
               <div key={u.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_80px_80px_60px_60px_50px] gap-2 sm:gap-0 px-4 py-3 border-b-2 border-border hover:bg-surface-sunken transition-colors items-center">
-                <Link href={`/users/${u.id}`} className="text-sm font-bold text-text hover:text-primary flex items-center gap-2">
+                <Link href={`/users/${u.id}`} prefetch={false} className="text-sm font-bold text-text hover:text-primary flex items-center gap-2">
                   <div className="w-6 h-6 bg-surface-sunken border border-border flex items-center justify-center text-[10px] font-black shrink-0">
                     {u.display_name[0].toUpperCase()}
                   </div>

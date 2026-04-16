@@ -201,7 +201,7 @@ export default function CompetitionDetailPage() {
                   return (
                     <div key={g.id} className={`px-5 py-4 border-b-2 border-border ${isGiver || isReceiver ? "bg-primary/5" : ""}`}>
                       <div className="flex items-center gap-3 flex-wrap">
-                        <Link href={`/users/${g.giver_id}`} className="flex items-center gap-2 hover:opacity-80">
+                        <Link href={`/users/${g.giver_id}`} prefetch={false} className="flex items-center gap-2 hover:opacity-80">
                           <div className="w-8 h-8 bg-success/20 border-2 border-success flex items-center justify-center text-xs font-black">
                             {g.giver_name[0].toUpperCase()}
                           </div>
@@ -213,7 +213,7 @@ export default function CompetitionDetailPage() {
                           <ArrowRight size={16} strokeWidth={3} />
                         </div>
 
-                        <Link href={`/users/${g.receiver_id}`} className="flex items-center gap-2 hover:opacity-80">
+                        <Link href={`/users/${g.receiver_id}`} prefetch={false} className="flex items-center gap-2 hover:opacity-80">
                           <div className="w-8 h-8 bg-secondary/20 border-2 border-secondary flex items-center justify-center text-xs font-black">
                             {g.receiver_name[0].toUpperCase()}
                           </div>
@@ -318,7 +318,7 @@ export default function CompetitionDetailPage() {
                       <div className="w-8 sm:w-10 text-center text-sm shrink-0">
                         {isClosed ? <span className="text-base sm:text-lg">{getRankIcon(entry.rank)}</span> : getRank(entry.rank)}
                       </div>
-                      <Link href={`/users/${entry.user_id}`} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
+                      <Link href={`/users/${entry.user_id}`} prefetch={false} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 border-2 flex items-center justify-center text-xs font-black text-text shrink-0 ${
                           isClosed && entry.rank === 1 ? "bg-secondary/20 border-secondary" :
                           isClosed && entry.rank === 2 ? "bg-surface-sunken border-text-muted" :
