@@ -21,7 +21,7 @@ export default function CompetitionDetailPage() {
   const { toast } = useToast();
   const competitionId = params.id as string;
 
-  const [competition, setCompetition] = useState<{ name: string; start_date: string; end_date: string; points_per_minute: number; status: string; participants?: Array<{ user: { id: string }; points: number; days_read: number; minutes_total: number }> } | null>(null);
+  const [competition, setCompetition] = useState<{ name: string; start_date: string; end_date: string; points_per_minute: number; status: string; participants?: Array<{ user: { id: string; display_name: string }; points: number; days_read: number; minutes_total: number }> } | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [myRank, setMyRank] = useState<MyRank | null>(null);
   const [gifts, setGifts] = useState<GiftExchange[]>([]);
@@ -37,12 +37,27 @@ export default function CompetitionDetailPage() {
     try {
       setLoading(true);
       const [lb, rank, comp, giftList] = await Promise.all([
-        api.getLeaderboard(competitionId, 50),
+        api.getLeaderboard(competitionId, 50).catch(() => []),
         user ? api.getMyRank(competitionId).catch(() => null) : Promise.resolve(null),
         api.getCompetition(competitionId).catch(() => null),
         api.getGiftExchanges(competitionId).catch(() => []),
       ]);
-      setLeaderboard(Array.isArray(lb) ? lb : []);
+
+      let leaderboardData = Array.isArray(lb) ? lb : [];
+
+      // For closed competitions (or when Redis has no data), build leaderboard from participants
+      if (leaderboardData.length === 0 && comp?.participants && comp.participants.length > 0) {
+        leaderboardData = [...comp.participants]
+          .sort((a, b) => b.points - a.points)
+          .map((p, i) => ({
+            user_id: p.user.id,
+            display_name: p.user.display_name,
+            points: p.points,
+            rank: i + 1,
+          }));
+      }
+
+      setLeaderboard(leaderboardData);
       setMyRank(rank);
       setCompetition(comp);
       setGifts(Array.isArray(giftList) ? giftList : []);
