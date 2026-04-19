@@ -23,7 +23,7 @@ interface AdminUser {
 }
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -31,10 +31,11 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { router.push("/login"); return; }
     if (!user.is_admin) { router.push("/dashboard"); return; }
     loadUsers();
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
   const loadUsers = async () => {
     try {
@@ -54,6 +55,7 @@ export default function AdminPage() {
     } catch { toast("Failed to delete", "error"); }
   };
 
+  if (authLoading) return null;
   if (!user?.is_admin) return null;
 
   const filtered = users.filter((u) =>
