@@ -212,19 +212,22 @@ export default function CompetitionDetailPage() {
             ) : (
               <div>
                 <div className="px-5 py-3 bg-surface-sunken border-b-2 border-border">
-                  <p className="text-xs text-text-muted font-medium">Top 50% give gifts to bottom 50%. Confirm once given/received.</p>
+                  <p className="text-xs text-text-muted font-medium">Bottom 50% give gifts to top 50%. Confirm once given/received.</p>
                 </div>
                 {gifts.map((g) => {
-                  const isGiver = user?.id === g.giver_id;
-                  const isReceiver = user?.id === g.receiver_id;
+                  // Display flip: backend pairs top→bottom, but we show bottom→top.
+                  // `left` = displayed giver (= backend receiver, bottom 50%).
+                  // `right` = displayed receiver (= backend giver, top 50%).
+                  const isGiver = user?.id === g.receiver_id;
+                  const isReceiver = user?.id === g.giver_id;
                   return (
                     <div key={g.id} className={`px-5 py-4 border-b-2 border-border ${isGiver || isReceiver ? "bg-primary/5" : ""}`}>
                       <div className="flex items-center gap-3 flex-wrap">
-                        <Link href={`/users/${g.giver_id}`} prefetch={false} className="flex items-center gap-2 hover:opacity-80">
+                        <Link href={`/users/${g.receiver_id}`} prefetch={false} className="flex items-center gap-2 hover:opacity-80">
                           <div className="w-8 h-8 bg-success/20 border-2 border-success flex items-center justify-center text-xs font-black">
-                            {g.giver_name[0].toUpperCase()}
+                            {g.receiver_name[0].toUpperCase()}
                           </div>
-                          <span className="text-sm font-bold text-text">{g.giver_name}</span>
+                          <span className="text-sm font-bold text-text">{g.receiver_name}</span>
                           {isGiver && <span className="text-[10px] font-bold text-primary uppercase">You</span>}
                         </Link>
 
@@ -232,11 +235,11 @@ export default function CompetitionDetailPage() {
                           <ArrowRight size={16} strokeWidth={3} />
                         </div>
 
-                        <Link href={`/users/${g.receiver_id}`} prefetch={false} className="flex items-center gap-2 hover:opacity-80">
+                        <Link href={`/users/${g.giver_id}`} prefetch={false} className="flex items-center gap-2 hover:opacity-80">
                           <div className="w-8 h-8 bg-secondary/20 border-2 border-secondary flex items-center justify-center text-xs font-black">
-                            {g.receiver_name[0].toUpperCase()}
+                            {g.giver_name[0].toUpperCase()}
                           </div>
-                          <span className="text-sm font-bold text-text">{g.receiver_name}</span>
+                          <span className="text-sm font-bold text-text">{g.giver_name}</span>
                           {isReceiver && <span className="text-[10px] font-bold text-primary uppercase">You</span>}
                         </Link>
                       </div>
@@ -250,22 +253,24 @@ export default function CompetitionDetailPage() {
 
                       <div className="flex items-center gap-4 mt-2 ml-10">
                         <div className="flex items-center gap-1">
-                          {g.giver_confirmed ? <Check size={12} className="text-success" /> : <X size={12} className="text-danger" />}
-                          <span className="text-[10px] text-text-muted font-bold uppercase">Giver {g.giver_confirmed ? "confirmed" : "pending"}</span>
+                          {g.receiver_confirmed ? <Check size={12} className="text-success" /> : <X size={12} className="text-danger" />}
+                          <span className="text-[10px] text-text-muted font-bold uppercase">Giver {g.receiver_confirmed ? "confirmed" : "pending"}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          {g.receiver_confirmed ? <Check size={12} className="text-success" /> : <X size={12} className="text-danger" />}
-                          <span className="text-[10px] text-text-muted font-bold uppercase">Receiver {g.receiver_confirmed ? "confirmed" : "pending"}</span>
+                          {g.giver_confirmed ? <Check size={12} className="text-success" /> : <X size={12} className="text-danger" />}
+                          <span className="text-[10px] text-text-muted font-bold uppercase">Receiver {g.giver_confirmed ? "confirmed" : "pending"}</span>
                         </div>
                       </div>
 
-                      {/* Action buttons for involved users */}
-                      {isGiver && !g.giver_confirmed && (
+                      {/* Action buttons for involved users.
+                          isGiver (displayed) = backend receiver, so they update receiver_confirmed.
+                          isReceiver (displayed) = backend giver, so they update giver_confirmed. */}
+                      {isGiver && !g.receiver_confirmed && (
                         <div className="mt-3 ml-10">
                           <GiftConfirmForm onConfirm={(desc) => handleConfirmGift(g.id, desc)} />
                         </div>
                       )}
-                      {isReceiver && !g.receiver_confirmed && (
+                      {isReceiver && !g.giver_confirmed && (
                         <button onClick={() => handleConfirmGift(g.id)}
                           className="mt-3 ml-10 px-4 py-2 bg-success text-text-inverse text-xs font-black uppercase border-2 border-border hover:opacity-90 transition-all">
                           Confirm Received
@@ -297,7 +302,7 @@ export default function CompetitionDetailPage() {
                     {isInTopHalf ? "\u2705 You're in the top 50%!" : "\u26a0\ufe0f You're in the bottom 50%"}
                   </span>
                   <span className="text-[10px] text-text-muted ml-2">
-                    {isInTopHalf ? "Keep it up! Stay ahead to be a gift giver." : "Read more to climb up and avoid receiving gifts!"}
+                    {isInTopHalf ? "Keep it up! Stay ahead to receive a gift." : "Read more to climb up and avoid having to give a gift!"}
                   </span>
                 </div>
                 <button onClick={findMe} className="px-3 py-1.5 bg-primary text-text-inverse text-[10px] font-black uppercase border-2 border-border hover:bg-secondary transition-all flex items-center gap-1 shrink-0">
